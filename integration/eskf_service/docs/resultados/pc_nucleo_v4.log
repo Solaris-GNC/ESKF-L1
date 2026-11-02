@@ -1,0 +1,21 @@
+# make -C c test (núcleo sin cambios)
+test_eskf [double]: 1449/1449 comprobaciones OK
+test_eskf [float]: 1447/1447 comprobaciones OK
+test_nav [double]: 192/192 comprobaciones OK
+test_nav [float]: 192/192 comprobaciones OK
+test_fw [double]: 18/18 comprobaciones OK
+test_fw [float]: 18/18 comprobaciones OK
+test_sim [double]: 81/81 comprobaciones OK
+test_sim [float]: 81/81 comprobaciones OK
+herramientas: 60/60 OK
+fw-check: la copia del firmware coincide con c/
+código 0
+# make -C firmware test (sin cambios)
+fw-check: la copia del firmware coincide con c/
+1331/1331 comprobaciones correctas
+1331/1331 comprobaciones correctas
+herramientas del firmware: 43/43 OK
+docs-check: PARAMETROS.md coincide con vn_params.c
+código 0
+# git status --porcelain -- c firmware (archivos cambiados)
+0

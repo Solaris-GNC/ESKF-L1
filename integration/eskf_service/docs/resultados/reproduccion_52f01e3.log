@@ -1,0 +1,61 @@
+# Reproducción ANTES (52f01e3) / AHORA de los cinco defectos de esta entrega
+# (generado con el código de 52f01e3 extraído con git archive y con el de esta entrega)
+
+## 1 y 2. Regresiones 27 y 28 de test_service compiladas contra el servicio de 52f01e3
+# (compat.h sólo renombra campos nuevos para poder compilar; las comprobaciones de la traza v3
+#  fallan ahí porque esa API no existía. Resultado del código de esta entrega: 231/231)
+  FALLO test/test_service.c(sobre 52f01e3):506: el respaldo sigue las medidas; el cero de lanzamiento espera 0.5 s de reposo continuo
+  FALLO test/test_service.c(sobre 52f01e3):823: cierre con la traza llena: E_FULL (vaciar y repetir)
+  FALLO test/test_service.c(sobre 52f01e3):829: END: 256 registros, CRC 0xffff, 71 perdidos por desbordamiento (declarados)
+  FALLO test/test_service.c(sobre 52f01e3):833: tras el cierre no se registra nada
+  FALLO test/test_service.c(sobre 52f01e3):1545: alineado en rampa; sin IMU en el ascenso y vuelta en el descenso: align_ok 1 → 2
+  FALLO test/test_service.c(sobre 52f01e3):1547: vuelo enclavado; fase publicada VUELO; ESKF NO VÁLIDO y fuera de servicio (motivos 0x3300)
+  FALLO test/test_service.c(sobre 52f01e3):1550: núcleo publicado NO VÁLIDO y congelado; why 0x0000
+  FALLO test/test_service.c(sobre 52f01e3):1552: fuente BARO: 37.8 m (real 37.8; antes el ESKF publicaba ~0 m y VÁLIDO)
+  FALLO test/test_service.c(sobre 52f01e3):1554: cero de rampa intacto bit a bit (0.001 m); vuelo reconocido por altura del respaldo (detector 0); ZUPT 130 → 243
+  FALLO test/test_service.c(sobre 52f01e3):1563: nunca alineado en rampa: tampoco hay alineación inicial en el descenso (align_ok 1)
+  FALLO test/test_service.c(sobre 52f01e3):1569: IMU perdida en el despegue y baro tardío: vuelo reconocido por |v_z| del respaldo; sin realinear (align_ok 2)
+  FALLO test/test_service.c(sobre 52f01e3):1572: sin referencia de rampa: respaldo NO válido, sin cero inventado; fuente NINGUNA; v_z -5.0 m/s sigue publicándose
+  FALLO test/test_service.c(sobre 52f01e3):1578: sin IMU ni baro en rampa: vuelo reconocido, ni alineación ni cero; medidas registradas (1480 aceptadas)
+  FALLO test/test_service.c(sobre 52f01e3):1599: despegue detectado por navigation.c
+  FALLO test/test_service.c(sobre 52f01e3):1604: sin referencia de rampa: altura sobre el lanzamiento desconocida, NO válido (antes: 0,44 m válido con cero en 42,5 m)
+  FALLO test/test_service.c(sobre 52f01e3):1611: una recuperación en vuelo tampoco fija un cero (2 recuperaciones)
+  FALLO test/test_service.c(sobre 52f01e3):1622: primer baro en el apogeo: sigue las medidas sin fijar el cero (el reposo no dura 0.5 s)
+  FALLO test/test_service.c(sobre 52f01e3):1626: vuelo reconocido en el descenso por |v_z| = -5.0 m/s; sin cero ni fuente; sin realinear
+213/231 comprobaciones correctas
+
+## 3. compare_runs.py: un único componente NaN en un snapshot válido (CRC interno y SPP recalculados)
+p[1]=NaN ANTES (52f01e3): código 0;   RESULTADO: EQUIVALENTE (dentro de tolerancia)
+p[1]=NaN AHORA: código 1;   RESULTADO: NO EQUIVALENTE
+v[2]=NaN ANTES (52f01e3): código 0;   RESULTADO: EQUIVALENTE (dentro de tolerancia)
+v[2]=NaN AHORA: código 1;   RESULTADO: NO EQUIVALENTE
+
+## 4. svc_replay --reproducir: trazas incompletas y metadatos alterados
+ANTES (52f01e3, traza v2) completa: código 0, 628 paquetes reproducidos; 
+ANTES (52f01e3, traza v2) sin los registros completos desde el último OUTPUT publicado (113 registros): código 4, 627 paquetes reproducidos; svc_replay: quedan 56 paquetes de entrada sin registro DELIVER tras 17017 registros (¿traza incompleta o desbordada?)
+ANTES (52f01e3, traza v2) último OUTPUT alterado a tipo 99 / longitud 1: código 0, 628 paquetes reproducidos; 
+AHORA (traza v3) completa: código 0, 628 paquetes reproducidos; svc_replay: reproducción COMPLETA: traza v3 cerrada (17131 registros, CRC 0x1750) contrastada entera; 7243 entradas, 628 salidas, 816 aplazamientos
+AHORA (traza v3) sin los registros completos desde el último OUTPUT publicado (114 registros): código 5, 0 paquetes reproducidos; svc_replay: traza SIN registro de cierre (END): 17017 registros; no prueba que la captura esté completa (placa apagada antes de cerrar, captura cortada o registros finales eliminados). Para reproducir lo registrado como PARCIAL: --parcial
+AHORA (traza v3) último OUTPUT alterado a tipo 99 / longitud 1 (END recalculado): código 4, 628 paquetes reproducidos;   reproducción: OUTPUT resultado 0 tipo 5 longitud 36 secuencia 627 timestampMs 24825
+--- traza del calendario propio (svc_replay --traza-val): termina con salidas
+ANTES (52f01e3, v2): 10318 registros; últimos tipos [5, 5, 5]
+ANTES (52f01e3, v2) completa: código 0, 655 paquetes; 
+ANTES (52f01e3, v2) sin el último registro completo (16 B): código 0, 654 paquetes; 
+ANTES (52f01e3, v2) último OUTPUT con tipo 99 / longitud 1: código 0, 655 paquetes; 
+AHORA (v3): 10319 registros; últimos tipos [5, 5, 7]
+AHORA (v3) completa: código 0, 655 paquetes; svc_replay: reproducción COMPLETA: traza v3 cerrada (10319 registros, CRC 0xa5b8) contrastada entera; 7243 entradas, 655 salidas, 0 aplazamientos
+AHORA (v3) sin el último registro completo (16 B): código 5, 0 paquetes; svc_replay: traza SIN registro de cierre (END): 10318 registros; no prueba que la captura esté completa (placa apagada antes de cerrar, captura cortad
+AHORA (v3) último OUTPUT con tipo 99 / longitud 1 (END recalculado): código 4, 655 paquetes;   reproducción: OUTPUT resultado 0 tipo 5 longitud 36 secuencia 654 timestampMs 25346
+
+## 5. nav_out_decode.py: 15 compactas (preajuste TELEMETRÍA), CRC SPP de una corrompido
+ANTES (52f01e3): código 0
+  <tmp>/bad.bin: 0 snapshots completos, 2 diagnósticos, 14 compactas; incompletos 0, mezclados 0, CRC mal 0, inválidos 0, saltos de secuencia SPP 1
+    última compacta: t 14500 ms sesión 1 arranque 0 validez servicio 2 fuente eskf capacidades ['actitud', 'ref_baro', 'nav_eskf', 'respaldo_baro'] ESKF h -0.00 m vz -0.00 m/s (edad 14 ms); respaldo h -0.01 m vz 0.09 m/s (válido 1, edad 10 ms)
+AHORA: código 1
+  <tmp>/bad.bin: 0 snapshots completos, 2 diagnósticos, 14 compactas
+    capa SPP: 17 paquetes (16 válidos del KPID de salida); rechazados por CRC SPP 1 (1 con el KPID de salida), por versión 0; saltos de secuencia de salida 1, repetidos 0; incidencias del lector: ninguna
+    mensajes: CRC interno mal 0, incompletos 0, mezclados 0, inválidos 0
+    última compacta: t 14500 ms sesión 1 arranque 0 validez servicio 2 fuente eskf capacidades ['actitud', 'ref_baro', 'nav_eskf', 'respaldo_baro'] ESKF h -0.00 m vz -0.00 m/s (edad 14 ms); respaldo h -0.01 m vz 0.09 m/s (válido 1, edad 10 ms)
+    COMPROBACIÓN FALLIDA: captura corrupta o incompleta; lo siguiente (2 incidencias; mensajes internos descartados: CRC 0, incompletos 0, mezclados 0, inválidos 0):
+      - paquete 8 (byte 512): rechazado por CRC SPP (KPID leído 0x0010, secuencia 8)
+      - secuencia SPP de salida 7 → 9: 1 paquetes 

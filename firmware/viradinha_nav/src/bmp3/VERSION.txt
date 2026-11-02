@@ -1,0 +1,2 @@
+db4cf8e4140c593b8c3d85f8c6c07335c7ffa9dc
+Bosch BMP3_SensorAPI tag bmp3_v2.0.6 (https://github.com/boschsensortec/BMP3_SensorAPI), sin modificar

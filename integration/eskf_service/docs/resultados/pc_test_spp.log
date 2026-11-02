@@ -1,0 +1,28 @@
+cc -std=c11 -O2 -fno-fast-math -ffp-contract=off -Ibuild/spp_inc -c build/spp_inc/spp/core/core.c -o build/spp/core/core.o
+cc -std=c11 -O2 -fno-fast-math -ffp-contract=off -Ibuild/spp_inc -c build/spp_inc/spp/core/commonbit.c -o build/spp/core/commonbit.o
+cc -std=c11 -O2 -fno-fast-math -ffp-contract=off -Ibuild/spp_inc -c build/spp_inc/spp/core/pubsub/pubsub.c -o build/spp/core/pubsub/pubsub.o
+cc -std=c11 -O2 -fno-fast-math -ffp-contract=off -Ibuild/spp_inc -c build/spp_inc/spp/services/databank/databank.c -o build/spp/services/databank/databank.o
+cc -std=c11 -O2 -fno-fast-math -ffp-contract=off -Ibuild/spp_inc -c build/spp_inc/spp/services/log/log.c -o build/spp/services/log/log.o
+cc -std=c11 -O2 -fno-fast-math -ffp-contract=off -Ibuild/spp_inc -c build/spp_inc/spp/util/crc.c -o build/spp/util/crc.o
+cc -std=c11 -O2 -fno-fast-math -ffp-contract=off -Ibuild/spp_inc -c build/spp_inc/spp/hal/hal.c -o build/spp/hal/hal.o
+cc -std=c11 -O2 -fno-fast-math -ffp-contract=off -Ibuild/spp_inc -c build/spp_inc/spp/hal/time/time.c -o build/spp/hal/time/time.o
+cc -std=c11 -O2 -fno-fast-math -ffp-contract=off -Ibuild/spp_inc -c build/spp_inc/spp/hal/spi/spi.c -o build/spp/hal/spi/spi.o
+cc -std=c11 -O2 -Wall -Wextra -Wpedantic -Wshadow -Werror -fno-fast-math -ffp-contract=off -DESKF_USE_FLOAT -Wdouble-promotion -Iinclude -I../../c -Ibuild/spp_inc test/test_spp_router.c src/spp_services_eskf.c src/eskf_service.c src/eskf_svc_params.c src/eskf_svc_msg.c ../../c/eskf.c ../../c/navigation.c ../../c/nav_events.c \
+  build/spp/core/core.o build/spp/core/commonbit.o build/spp/core/pubsub/pubsub.o build/spp/services/databank/databank.o build/spp/services/log/log.o build/spp/util/crc.o build/spp/hal/hal.o build/spp/hal/time/time.o build/spp/hal/spi/spi.o -lm -o build/test_spp_router
+== integración con el router REAL de SPP (un proceso por escenario)
+  carga en el router: 314 paquetes/s (20.1 kB/s); del ESKF 27/s
+orden_a: 23/23 comprobaciones correctas
+orden_b: 6/6 comprobaciones correctas
+config_invalida: 3/3 comprobaciones correctas
+estricto_pendiente: 3/3 comprobaciones correctas
+  cola del router tras el atasco: 125/128
+congestion: 6/6 comprobaciones correctas
+reloj_avanza: 2/2 comprobaciones correctas
+pool_vacio: 5/5 comprobaciones correctas
+registro_parcial: 4/4 comprobaciones correctas
+consumidores_llenos: 2/2 comprobaciones correctas
+prioridad: 1/1 comprobaciones correctas
+tardio: 3/3 comprobaciones correctas
+despegue: 4/4 comprobaciones correctas
+silencio: 6/6 comprobaciones correctas
+código 0

@@ -1,0 +1,562 @@
+{
+ "nominal": {
+  "duracion_simulada_s": 90.189,
+  "eventos": {
+   "liftoff": 0.048,
+   "burnout": 1.076,
+   "apogee": 8.923,
+   "recoverydevicedeployment": 9.077,
+   "groundhit": 90.189
+  },
+  "apogeo_verdad_m": 390.848,
+  "fases": {
+   "rampa": {
+    "n": 144,
+    "validez_servicio": [
+     "VÁLIDA"
+    ],
+    "validez_final": "VÁLIDA",
+    "motivos_servicio": [],
+    "motivos_nucleo": [],
+    "fuente": [
+     "eskf",
+     "ninguna"
+    ],
+    "capacidades_finales": [
+     "actitud",
+     "ref_baro",
+     "nav_eskf",
+     "respaldo_baro"
+    ],
+    "eskf_err_h_max_m": 0.04216238111257553,
+    "eskf_err_vz_max_mps": 0.008451013825833797,
+    "eskf_sigma_vz_max_mps": 0.021946990862488747,
+    "respaldo_err_h_max_m": 0.1475612223148346,
+    "respaldo_err_vz_max_mps": 0.8536280989646912,
+    "respaldo_valido_frac": 0.6597938144329897
+   },
+   "propulsión": {
+    "n": 11,
+    "validez_servicio": [
+     "DEGRADADA",
+     "VÁLIDA"
+    ],
+    "validez_final": "DEGRADADA",
+    "motivos_servicio": [
+     "SAT_CANDIDATE"
+    ],
+    "motivos_nucleo": [
+     "ACC_SAT"
+    ],
+    "fuente": [
+     "eskf"
+    ],
+    "capacidades_finales": [
+     "actitud",
+     "ref_baro",
+     "nav_eskf",
+     "respaldo_baro",
+     "ref_lanzamiento"
+    ],
+    "eskf_err_h_max_m": 0.15182278965546203,
+    "eskf_err_vz_max_mps": 4.875266697474828,
+    "eskf_sigma_vz_max_mps": 28.546838760375977,
+    "respaldo_err_h_max_m": 1.3171584123884514,
+    "respaldo_err_vz_max_mps": 15.360238154819847,
+    "respaldo_valido_frac": 1.0
+   },
+   "planeo": {
+    "n": 74,
+    "validez_servicio": [
+     "DEGRADADA"
+    ],
+    "validez_final": "DEGRADADA",
+    "motivos_servicio": [
+     "SAT_CANDIDATE"
+    ],
+    "motivos_nucleo": [
+     "ACC_SAT"
+    ],
+    "fuente": [
+     "eskf"
+    ],
+    "capacidades_finales": [
+     "actitud",
+     "ref_baro",
+     "nav_eskf",
+     "respaldo_baro",
+     "ref_lanzamiento"
+    ],
+    "eskf_err_h_max_m": 0.1010372656249956,
+    "eskf_err_vz_max_mps": 0.2213649902343917,
+    "eskf_sigma_vz_max_mps": 2.6166985034942627,
+    "respaldo_err_h_max_m": 1.0858127827962107,
+    "respaldo_err_vz_max_mps": 2.657021179199191,
+    "respaldo_valido_frac": 1.0
+   },
+   "apogeo": {
+    "n": 10,
+    "validez_servicio": [
+     "DEGRADADA"
+    ],
+    "validez_final": "DEGRADADA",
+    "motivos_servicio": [
+     "SAT_CANDIDATE"
+    ],
+    "motivos_nucleo": [
+     "ACC_SAT"
+    ],
+    "fuente": [
+     "eskf"
+    ],
+    "capacidades_finales": [
+     "actitud",
+     "ref_baro",
+     "nav_eskf",
+     "respaldo_baro",
+     "ref_lanzamiento"
+    ],
+    "eskf_err_h_max_m": 0.09405464843746358,
+    "eskf_err_vz_max_mps": 0.019321869947482195,
+    "eskf_sigma_vz_max_mps": 0.06051400676369667,
+    "respaldo_err_h_max_m": 0.1663866992187195,
+    "respaldo_err_vz_max_mps": 1.5276449767685025,
+    "respaldo_valido_frac": 1.0
+   },
+   "descenso": {
+    "n": 787,
+    "validez_servicio": [
+     "DEGRADADA"
+    ],
+    "validez_final": "DEGRADADA",
+    "motivos_servicio": [
+     "SAT_CANDIDATE"
+    ],
+    "motivos_nucleo": [
+     "ACC_SAT"
+    ],
+    "fuente": [
+     "eskf"
+    ],
+    "capacidades_finales": [
+     "actitud",
+     "ref_baro",
+     "nav_eskf",
+     "respaldo_baro",
+     "ref_lanzamiento"
+    ],
+    "eskf_err_h_max_m": 0.2516797734375018,
+    "eskf_err_vz_max_mps": 0.37020621481323257,
+    "eskf_sigma_vz_max_mps": 0.14037087559700012,
+    "respaldo_err_h_max_m": 0.24018284557712377,
+    "respaldo_err_vz_max_mps": 1.046319317720375,
+    "respaldo_valido_frac": 1.0
+   },
+   "aterrizaje": {
+    "n": 20,
+    "validez_servicio": [
+     "DEGRADADA"
+    ],
+    "validez_final": "DEGRADADA",
+    "motivos_servicio": [
+     "SAT_CANDIDATE"
+    ],
+    "motivos_nucleo": [
+     "ACC_SAT"
+    ],
+    "fuente": [
+     "eskf"
+    ],
+    "capacidades_finales": [
+     "actitud",
+     "ref_baro",
+     "nav_eskf",
+     "respaldo_baro",
+     "ref_lanzamiento"
+    ],
+    "eskf_err_h_max_m": 0.041437309143695034,
+    "eskf_err_vz_max_mps": 0.032853501705248256,
+    "eskf_sigma_vz_max_mps": 0.020664669573307037,
+    "respaldo_err_h_max_m": 0.17910147094726536,
+    "respaldo_err_vz_max_mps": 1.042042993350905,
+    "respaldo_valido_frac": 1.0
+   }
+  },
+  "decodificacion": {
+   "snapshots": 1101,
+   "compactas": 1101,
+   "incompletos": 0,
+   "crc_interno_mal": 0,
+   "crc_spp_mal": 0
+  },
+  "despegue_detectado_s": 0.09999999999999787,
+  "apogeo_eskf_m": 390.93695068359375,
+  "apogeo_respaldo_m": 391.01336669921875,
+  "validas_tras_recorte": 0,
+  "eskf_invalida_desde_s": null,
+  "resumen_servicio": {
+   "perfil": "1",
+   "navega": "1",
+   "motivo": "-",
+   "why_code": "0",
+   "readiness": "0x07ff",
+   "config_id": "0x5347",
+   "paquetes": "35200",
+   "rechazados": "0",
+   "mensajes": "6717",
+   "sizeof_servicio": "19616",
+   "sesion": "1",
+   "delivered": "35200",
+   "mailbox_full": "0",
+   "rejected_apid": "0",
+   "rejected_len": "0",
+   "rejected_crc": "0",
+   "mailbox_hwm": "1",
+   "imu_rx": "24681",
+   "baro_rx": "10519",
+   "imu_bad_len": "0",
+   "imu_nonfinite": "0",
+   "imu_out_of_range": "0",
+   "reserved_nonzero": "0",
+   "dmp_invalid": "0",
+   "seq_lost_imu": "0",
+   "seq_lost_baro": "0",
+   "seq_dup": "0",
+   "seq_old": "0",
+   "seq_resync": "0",
+   "ts_future": "0",
+   "late_imu": "0",
+   "late_baro": "0",
+   "sat_cand_acc": "210",
+   "sat_cand_gyro": "0",
+   "sat_hw_confirmed": "0",
+   "sat_out_of_model": "0",
+   "clock_mismatch": "0",
+   "lat_rx_max_us": "0",
+   "loss_recovered": "0",
+   "nav_calls": "35200",
+   "nav_backlog_max": "4",
+   "merge_full_waits": "0",
+   "snapshots": "1101",
+   "snapshots_skipped": "0",
+   "diag_msgs": "111",
+   "ops_msgs": "1101",
+   "usados": "10499",
+   "descartados": "0",
+   "reinicios": "0",
+   "huecos": "0",
+   "valido": "0",
+   "congelada": "1",
+   "h": "0.074",
+   "vz": "-4.700",
+   "ref": "0.006",
+   "nav_validez": "0",
+   "svc_validez": "0",
+   "motivos_nav": "0x1010",
+   "motivos_svc": "0x3380",
+   "caps": "0x12",
+   "fuente": "0",
+   "fase": "1",
+   "t_state_us": "110188000",
+   "accuracy": "3",
+   "publicados": "6717",
+   "perdidos": "0",
+   "aplazados": "0",
+   "vuelo": "1",
+   "detector_vuelo": "1",
+   "nav_cortado": "0",
+   "muestras_retenidas": "0",
+   "imu_applied": "23555",
+   "gaps": "0",
+   "rest_breaks_gap": "0",
+   "rest_windows_ok": "3",
+   "align_ok": "1",
+   "baro_used": "10469",
+   "time_future": "0",
+   "imu_acc_sat": "210",
+   "ref_overflow": "0"
+  }
+ },
+ "adverso": {
+  "duracion_simulada_s": 72.244,
+  "eventos": {
+   "liftoff": 0.048,
+   "burnout": 1.076,
+   "apogee": 7.875,
+   "recoverydevicedeployment": 9.077,
+   "groundhit": 72.244
+  },
+  "apogeo_verdad_m": 310.351,
+  "fases": {
+   "rampa": {
+    "n": 144,
+    "validez_servicio": [
+     "DEGRADADA",
+     "VÁLIDA"
+    ],
+    "validez_final": "VÁLIDA",
+    "motivos_servicio": [
+     "NO_ALT_REF"
+    ],
+    "motivos_nucleo": [],
+    "fuente": [
+     "baro",
+     "eskf",
+     "ninguna"
+    ],
+    "capacidades_finales": [
+     "actitud",
+     "ref_baro",
+     "nav_eskf",
+     "respaldo_baro"
+    ],
+    "eskf_err_h_max_m": 0.06604403257369995,
+    "eskf_err_vz_max_mps": 0.008552691899240017,
+    "eskf_sigma_vz_max_mps": 0.02194707840681076,
+    "respaldo_err_h_max_m": 0.12462795525789261,
+    "respaldo_err_vz_max_mps": 0.9166133999824524,
+    "respaldo_valido_frac": 0.711340206185567
+   },
+   "propulsión": {
+    "n": 11,
+    "validez_servicio": [
+     "DEGRADADA",
+     "VÁLIDA"
+    ],
+    "validez_final": "DEGRADADA",
+    "motivos_servicio": [
+     "SAT_CANDIDATE"
+    ],
+    "motivos_nucleo": [
+     "ACC_SAT"
+    ],
+    "fuente": [
+     "eskf"
+    ],
+    "capacidades_finales": [
+     "actitud",
+     "ref_baro",
+     "nav_eskf",
+     "respaldo_baro",
+     "ref_lanzamiento"
+    ],
+    "eskf_err_h_max_m": 0.16832147350309867,
+    "eskf_err_vz_max_mps": 5.541013206481843,
+    "eskf_sigma_vz_max_mps": 28.546846389770508,
+    "respaldo_err_h_max_m": 1.0943987121582026,
+    "respaldo_err_vz_max_mps": 14.639392862955567,
+    "respaldo_valido_frac": 1.0
+   },
+   "planeo": {
+    "n": 63,
+    "validez_servicio": [
+     "DEGRADADA"
+    ],
+    "validez_final": "DEGRADADA",
+    "motivos_servicio": [
+     "SAT_CANDIDATE"
+    ],
+    "motivos_nucleo": [
+     "ACC_SAT"
+    ],
+    "fuente": [
+     "eskf"
+    ],
+    "capacidades_finales": [
+     "actitud",
+     "ref_baro",
+     "nav_eskf",
+     "respaldo_baro",
+     "ref_lanzamiento"
+    ],
+    "eskf_err_h_max_m": 0.07537756347667113,
+    "eskf_err_vz_max_mps": 0.3846912231445003,
+    "eskf_sigma_vz_max_mps": 2.616702079772949,
+    "respaldo_err_h_max_m": 0.8418203430175666,
+    "respaldo_err_vz_max_mps": 2.789058268229198,
+    "respaldo_valido_frac": 1.0
+   },
+   "apogeo": {
+    "n": 10,
+    "validez_servicio": [
+     "DEGRADADA"
+    ],
+    "validez_final": "DEGRADADA",
+    "motivos_servicio": [
+     "SAT_CANDIDATE"
+    ],
+    "motivos_nucleo": [
+     "ACC_SAT"
+    ],
+    "fuente": [
+     "eskf"
+    ],
+    "capacidades_finales": [
+     "actitud",
+     "ref_baro",
+     "nav_eskf",
+     "respaldo_baro",
+     "ref_lanzamiento"
+    ],
+    "eskf_err_h_max_m": 0.061892138671908015,
+    "eskf_err_vz_max_mps": 0.022658385848999707,
+    "eskf_sigma_vz_max_mps": 0.05019748955965042,
+    "respaldo_err_h_max_m": 0.15793310546877137,
+    "respaldo_err_vz_max_mps": 1.8859948768615853,
+    "respaldo_valido_frac": 1.0
+   },
+   "descenso": {
+    "n": 619,
+    "validez_servicio": [
+     "DEGRADADA",
+     "NO VÁLIDA"
+    ],
+    "validez_final": "NO VÁLIDA",
+    "motivos_servicio": [
+     "SAT_CANDIDATE",
+     "SAT_OUT_OF_MODEL"
+    ],
+    "motivos_nucleo": [
+     "ACC_SAT"
+    ],
+    "fuente": [
+     "baro",
+     "eskf"
+    ],
+    "capacidades_finales": [
+     "ref_baro",
+     "respaldo_baro",
+     "ref_lanzamiento"
+    ],
+    "eskf_err_h_max_m": 0.053491533203100516,
+    "eskf_err_vz_max_mps": 0.03045256835937593,
+    "eskf_sigma_vz_max_mps": 0.04187382012605667,
+    "respaldo_err_h_max_m": 0.28832714843747453,
+    "respaldo_err_vz_max_mps": 4.693730569458008,
+    "respaldo_valido_frac": 1.0
+   },
+   "aterrizaje": {
+    "n": 20,
+    "validez_servicio": [
+     "NO VÁLIDA"
+    ],
+    "validez_final": "NO VÁLIDA",
+    "motivos_servicio": [
+     "SAT_CANDIDATE",
+     "SAT_OUT_OF_MODEL"
+    ],
+    "motivos_nucleo": [
+     "ACC_SAT"
+    ],
+    "fuente": [
+     "baro"
+    ],
+    "capacidades_finales": [
+     "ref_baro",
+     "respaldo_baro",
+     "ref_lanzamiento"
+    ],
+    "eskf_err_h_max_m": null,
+    "eskf_err_vz_max_mps": null,
+    "eskf_sigma_vz_max_mps": null,
+    "respaldo_err_h_max_m": 0.1585552156167056,
+    "respaldo_err_vz_max_mps": 1.2454815626844846,
+    "respaldo_valido_frac": 1.0
+   }
+  },
+  "decodificacion": {
+   "snapshots": 922,
+   "compactas": 922,
+   "incompletos": 0,
+   "crc_interno_mal": 0,
+   "crc_spp_mal": 0
+  },
+  "despegue_detectado_s": 0.09999999999999787,
+  "apogeo_eskf_m": 310.3970031738281,
+  "apogeo_respaldo_m": 310.46405029296875,
+  "validas_tras_recorte": 0,
+  "eskf_invalida_desde_s": 9.099999999999998,
+  "resumen_servicio": {
+   "perfil": "1",
+   "navega": "1",
+   "motivo": "-",
+   "why_code": "0",
+   "readiness": "0x07ff",
+   "config_id": "0x5347",
+   "paquetes": "29368",
+   "rechazados": "0",
+   "mensajes": "5625",
+   "sizeof_servicio": "19616",
+   "sesion": "1",
+   "delivered": "29368",
+   "mailbox_full": "0",
+   "rejected_apid": "0",
+   "rejected_len": "0",
+   "rejected_crc": "0",
+   "mailbox_hwm": "1",
+   "imu_rx": "20643",
+   "baro_rx": "8725",
+   "imu_bad_len": "0",
+   "imu_nonfinite": "0",
+   "imu_out_of_range": "0",
+   "reserved_nonzero": "0",
+   "dmp_invalid": "0",
+   "seq_lost_imu": "0",
+   "seq_lost_baro": "0",
+   "seq_dup": "0",
+   "seq_old": "0",
+   "seq_resync": "0",
+   "ts_future": "0",
+   "late_imu": "0",
+   "late_baro": "0",
+   "sat_cand_acc": "251",
+   "sat_cand_gyro": "0",
+   "sat_hw_confirmed": "0",
+   "sat_out_of_model": "1",
+   "clock_mismatch": "0",
+   "lat_rx_max_us": "0",
+   "loss_recovered": "0",
+   "nav_calls": "29368",
+   "nav_backlog_max": "4",
+   "merge_full_waits": "0",
+   "snapshots": "922",
+   "snapshots_skipped": "0",
+   "diag_msgs": "93",
+   "ops_msgs": "922",
+   "usados": "8705",
+   "descartados": "0",
+   "reinicios": "0",
+   "huecos": "0",
+   "valido": "0",
+   "congelada": "1",
+   "h": "0.071",
+   "vz": "-4.681",
+   "ref": "-0.001",
+   "nav_validez": "0",
+   "svc_validez": "0",
+   "motivos_nav": "0x1010",
+   "motivos_svc": "0x3388",
+   "caps": "0x12",
+   "fuente": "0",
+   "fase": "1",
+   "t_state_us": "92242000",
+   "accuracy": "3",
+   "publicados": "5625",
+   "perdidos": "0",
+   "aplazados": "0",
+   "vuelo": "1",
+   "detector_vuelo": "1",
+   "nav_cortado": "0",
+   "muestras_retenidas": "0",
+   "imu_applied": "19517",
+   "gaps": "0",
+   "rest_breaks_gap": "0",
+   "rest_windows_ok": "3",
+   "align_ok": "1",
+   "baro_used": "8174",
+   "time_future": "0",
+   "imu_acc_sat": "251",
+   "ref_overflow": "0"
+  }
+ }
+}

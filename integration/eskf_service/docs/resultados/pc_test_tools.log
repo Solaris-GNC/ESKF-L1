@@ -1,0 +1,188 @@
+cc -std=c99 -O2 -Wall -Wextra -Wpedantic -Wshadow -Werror -fno-fast-math -ffp-contract=off -DESKF_USE_FLOAT -Wdouble-promotion -Iinclude -I../../c test/svc_replay.c src/eskf_service.c src/eskf_svc_params.c src/eskf_svc_msg.c ../../c/eskf.c ../../c/navigation.c ../../c/nav_events.c -lm -o build/svc_replay
+cc -std=c99 -O2 -Wall -Wextra -Wpedantic -Wshadow -Werror -ffp-contract=fast -mfma -DESKF_USE_FLOAT -Wdouble-promotion -Iinclude -I../../c test/svc_replay.c src/eskf_service.c src/eskf_svc_params.c src/eskf_svc_msg.c ../../c/eskf.c ../../c/navigation.c ../../c/nav_events.c -lm -o build/svc_replay_fma
+make -C ../../c build/nav_replay_float
+make[1]: Entering directory '<repo>/c'
+make[1]: 'build/nav_replay_float' is up to date.
+make[1]: Leaving directory '<repo>/c'
+python3 test/test_spp_tools.py --svc build/svc_replay --nav-replay ../../c/build/nav_replay_float \
+  --router build/test_spp_router --svc-fma build/svc_replay_fma  \
+  --resultados docs/resultados
+A. captura histórica (fixture): conteos, CRC, formatos y relleno
+  [OK] binario regenerado = spp_dump.bin recibido (SHA-256)
+  [OK] volcado regenerado = spp_dump.txt recibido (SHA-256)
+  [OK] 14 048 paquetes de 64 B, 899 072 B, ceros hasta 16 MiB
+  [OK] 1 FSM 0x0002 (4 B), 4343 BMP 0x0004 (12 B), 9704 IMU 0x0008 (48 B)
+  [OK] CRC 14 048/14 048, versión 1, dropCounter 0
+  [OK] secuencias consecutivas
+  [OK] marcas 1732–44862 ms (43,130 s), monótonas
+  [OK] BMP ≈ 100,69 Hz e IMU ≈ 225,16 Hz
+  [OK] 13 intervalos IMU de 33–35 ms cada 1104 paquetes (≈3,39 s)
+  [OK] faltan ~6,5–7 periodos por intervalo con la secuencia consecutiva
+  [OK] histórico: índice 11 siempre 0; índice 10 entero 295–453 (accuracy)
+  [OK] 7 candidatos a saturación en el eje 3 (dominio de códigos sin offsets)
+  [OK] BMP histórico: altura ISA absoluta ±2 cm
+  [OK] la captura NO pasa como formato definitivo: 48 B señalados como longitud inesperada
+  [OK] telemetry_example.hex: hex = primeros 100 paquetes
+  [OK] telemetry_example.txt: xxd64 = primeros 100 paquetes
+  [OK] volcado de 16 B por línea completo = binario
+B. robustez del lector: Intel HEX, columna ASCII, líneas, truncado, corrupción, longitudes
+  [OK] Intel HEX rechazado
+  [OK] columna ASCII con aspecto hexadecimal: ignorada
+  [OK] línea perdida: error con el desplazamiento
+  [OK] final truncado
+  [OK] byte corrompido: un CRC malo
+  [OK] byte insertado: resincronización
+  [OK] ceros intermedios ≠ relleno final
+  [OK] longitud 60 con CRC correcto
+  [OK] relleno 0xFF dentro del CRC: alterarlo invalida el paquete
+C. servicio con la captura histórica (compatibilidad explícita, --historico)
+  [OK] ADQ: mismas cuentas que el lector independiente; la FSM no está suscrita
+  [OK] BANCO: 7 candidatos, 0 saturaciones confirmadas por hardware
+  [OK] BANCO: no alinea (rest_breaks_gap > 0) — el resultado se conserva
+  [OK] explicación sin tocar parámetros: 3,36 s < 5 s
+  [OK] giro publicado coherente con el DMP en la captura (cociente ≈ 1; no es calibración)
+  [OK] salida reconstruida por el decodificador Python independiente
+D. formato definitivo (44 B, sintético) y reproducción
+  [OK] 44 B: códigos (v + offset)·8192 enteros; ningún valor fuera de dominio
+  [OK] baro relativo: p0 implícita constante
+  [OK] BANCO alinea con el formato definitivo y el baro tras la calibración
+  [OK] parones de 34 ms cada 3,39 s (secuencia consecutiva): no alinea
+  [OK] pérdidas de secuencia: servicio y lector cuentan lo mismo; motivo IMU_LOSS publicado
+E. las llamadas del servicio por nav_replay: comparación exacta
+  [OK] sintético 44 B, consumir cada 1, retardo 0 µs: idéntico (9482 líneas)
+  [OK] sintético 44 B, consumir cada 3, retardo 2500 µs: idéntico (6338 líneas)
+  [OK] sintético 44 B, consumir cada 7, retardo 0 µs: idéntico (5439 líneas)
+  [OK] sintético 44 B: conversor Python = entradas del servicio (4716 eventos)
+  [OK] captura 48 B, consumir cada 1, retardo 0 µs: idéntico (28145 líneas)
+  [OK] captura 48 B, consumir cada 3, retardo 2500 µs: idéntico (18779 líneas)
+  [OK] captura 48 B, consumir cada 7, retardo 0 µs: idéntico (16103 líneas)
+  [OK] captura 48 B: conversor Python = entradas del servicio (14047 eventos)
+F. traza de validación: otro proceso reproduce el mismo calendario
+  [OK] sintético: mensajes de salida idénticos byte a byte (444 paquetes; traza 107808 B)
+  [OK] captura: mensajes de salida idénticos byte a byte (1163 paquetes; traza 318416 B)
+H. router REAL: la traza del pegamento reproduce los paquetes completos; reproducción estricta
+  [OK] escenario de congestión con el router SPP real
+  [OK] congestión: 628 paquetes reproducidos = 628 recibidos por el registro, idénticos byte a byte (aplazados 816)
+  [OK] una traza de OTRA configuración se detecta (código 6)
+  [OK] el calendario propio (PC determinista) NO es el comportamiento del router: 665 frente a 628 paquetes
+  [OK] router real con un reloj que avanza en cada lectura
+  [OK] igualdad de CARGAS ÚTILES: 216 reproducidos frente a 216 originales
+  [OK] igualdad de PAQUETES COMPLETOS (cabecera incluida): 216/216; en 216 de 216 el timestampMs del paquete ≠ ms del último reloj del servicio
+  [OK] traza truncada 3 B: error (código 5) con el registro afectado — svc_replay: traza TRUNCADA: 274093 B no es múltiplo de 16; el registro 17130 está incompleto (13 B desde el by
+  [OK] traza de versión 1: rechazada (código 6) con un mensaje útil — svc_replay: traza de versión 1; esta herramienta reproduce la versión 5, que se cierra con un regist
+  [OK] traza de versión 2: rechazada (código 6) con un mensaje útil — svc_replay: traza de versión 2; esta herramienta reproduce la versión 5, que se cierra con un regist
+  [OK] traza de versión 3: rechazada (código 6) con un mensaje útil — svc_replay: traza de versión 3; esta herramienta reproduce la versión 5, que se cierra con un regist
+  [OK] traza de versión 4: rechazada (código 6) con un mensaje útil — svc_replay: traza de versión 4; esta herramienta reproduce la versión 5, que se cierra con un regist
+  [OK] entrega incoherente con las entradas: código 4 en el registro 202 — svc_replay: registro 202 (byte 3232): DELIVER apid 0x0004 seq 65, pero la entrada 64 es ap
+  [OK] traza completa del router real: 17131 registros, termina en END con recuento y CRC; reproducción COMPLETA (código 0, 628 paquetes)
+  [OK] REGRESIÓN: sin los 1 últimos registros completos (múltiplo de 16 B): código 5, «sin cierre»
+  [OK] REGRESIÓN: sin los 2 últimos registros completos (múltiplo de 16 B): código 5, «sin cierre»
+  [OK] REGRESIÓN: sin los 40 últimos registros completos (múltiplo de 16 B): código 5, «sin cierre»
+  [OK] truncada dentro de un registro: código 5
+  [OK] un registro OUTPUT eliminado en medio (END intacto): código 5, faltan registros
+  [OK] OUTPUT alterado a tipo 99 / longitud 1 sin rehacer el END: código 4, CRC distinto
+  [OK] REGRESIÓN: OUTPUT tipo 99 / longitud 1 con el END recalculado: código 4 en el registro 8565 — el mensaje producido es otro
+  [OK] DELIVER con otra longitud de una entrada (END recalculado): código 4 en el registro 5711
+  [OK] DELIVER con otra resultado de una entrega (END recalculado): código 4 en el registro 5711
+  [OK] CONSUME con otros mensajes construidos (END recalculado): código 4 en el registro 5715
+  [OK] OUTPUT con otro timestampMs (END recalculado): código 4
+  [OK] END que declara 3 registros perdidos por desbordamiento: código 5
+  [OK] END en mitad de la traza: código 4
+  [OK] --parcial con una traza sin cierre (cortada a mitad de registro): código 3, «PARCIAL», 304 paquetes de 628
+  [OK] --parcial con una traza cerrada: se comprueba entera y es COMPLETA (código 0)
+  [OK] --parcial también contrasta los metadatos: código 4
+  [OK] entradas sobrantes tras la traza: código 4
+  [OK] entradas agotadas antes que la traza: código 4
+  [OK] entradas truncadas (no múltiplo de 64 B): código 5
+I. escenarios de vuelo sintéticos (series OpenRocket «Simulation 6»; datos simulados, no validación)
+  [OK] nominal: vuelo ENTERO simulado (90.2 s tras 20 s de rampa, hasta el impacto a 90.189 s)
+  [OK] nominal: rampa sin NO VÁLIDA tras alinear (['VÁLIDA']); VÁLIDA y fuente ESKF al final
+  [OK] nominal: despegue detectado en ≤ 0.15 s (0.10 s)
+  [OK] nominal: propulsión recortada a ±4 g → DEGRADADA con ACC_SAT (nunca VÁLIDA tras el recorte), σv_z hasta 28.5 m/s
+  [OK] nominal: el error de altura ESKF en propulsión (0.15 m) y de velocidad (4.88 m/s) queda dentro de 3σ publicada
+  [OK] nominal: apogeo ESKF 390.9 m y respaldo 391.0 m frente a 390.8 m de la serie (±2 m)
+  [OK] nominal: respaldo barométrico válido en todo el vuelo hasta el aterrizaje; |Δh| máx en planeo 1.09 m, en el aterrizaje 0.18 m
+  [OK] adverso: vuelo ENTERO simulado (72.2 s tras 20 s de rampa, hasta el impacto a 72.244 s)
+  [OK] adverso: rampa sin NO VÁLIDA tras alinear (['DEGRADADA', 'VÁLIDA']); VÁLIDA y fuente ESKF al final
+  [OK] adverso: despegue detectado en ≤ 0.15 s (0.10 s)
+  [OK] adverso: propulsión recortada a ±4 g → DEGRADADA con ACC_SAT (nunca VÁLIDA tras el recorte), σv_z hasta 28.5 m/s
+  [OK] adverso: el error de altura ESKF en propulsión (0.17 m) y de velocidad (5.54 m/s) queda dentro de 3σ publicada
+  [OK] adverso: apogeo ESKF 310.4 m y respaldo 310.5 m frente a 310.4 m de la serie (±2 m)
+  [OK] adverso: respaldo barométrico válido en todo el vuelo hasta el aterrizaje; |Δh| máx en planeo 0.84 m, en el aterrizaje 0.16 m
+  [OK] nominal: despliegue a 3.7 g (sin recorte) → ESKF utilizable hasta el aterrizaje, fuente ESKF; |Δh| 0.04 m al aterrizar
+  [OK] adverso: despliegue a 57 g fuera de la ventana del motor → SAT_OUT_OF_MODEL, ESKF NO VÁLIDA desde 9.10 s hasta el aterrizaje y fuente BARO
+J. comparación numérica placa–PC (otra aritmética: FMA), falsos éxitos y herramientas de salida
+  [OK] «placa» compilada con FMA y otro calendario frente al PC con su traza: binario distinto, EQUIVALENTE dentro de tolerancia, todas las salidas emparejadas
+     compare_runs [COMPLETA]: 763 salidas comparadas por (sesión, id) — placa {'snap': 543, 'diag': 110, 'ops': 110}, PC {'snap': 543, 'diag': 110, 'ops': 110}
+       diferencias máximas brutas: posición 0.381 m, velocidad 0.0165 m/s, actitud 0.000392 rad, σ relativa 0.00196, sesgos 0.000391 m/s² / 1.42e-05 rad/s
+       RESULTADO: EQUIVALENTE (dentro de tolerancia)
+  [OK] REGRESIÓN: traza del calendario propio (termina en salidas) sin su último registro completo: código 5 (antes: éxito con un paquete menos)
+  [OK] REGRESIÓN: 47 snapshots emparejados + 1 completo de la placa SIN pareja → NO equivalente (código 1)
+  [OK] captura de la placa con un paquete perdido: NO equivalente
+  [OK] captura de la placa cortada a mitad de snapshot: NO equivalente
+  [OK] otro vuelo: NO equivalente (la herramienta discrimina)
+  [OK] comparación base: 25 snapshots SIN estado (antes de alinear) con NaN legítimos en ambas, comparados sin fallo; el snapshot alterado abajo es (1, 301) (con estado, validez 1)
+  [OK] REGRESIÓN: sólo la posición Y = NaN (antes: código 0, EQUIVALENTE, dif. 0): código 1, «p[1]» señalado
+  [OK] REGRESIÓN: sólo la velocidad Z = NaN (antes: código 0, EQUIVALENTE): código 1, «v[2]» señalado
+  [OK] velocidad Y = +inf: código 1, «v[1]» señalado
+  [OK] sesgo de acelerómetro Z = NaN: código 1, «b_a[2]» señalado
+  [OK] sesgo de giróscopo Y = −inf: código 1, «b_g[1]» señalado
+  [OK] σ_p Z = NaN: código 1, «sigma_p[2]» señalado
+  [OK] σ_v Y = +inf: código 1, «sigma_v[1]» señalado
+  [OK] σ_θ Z = NaN: código 1, «sigma_th[2]» señalado
+  [OK] alt_ref = NaN con referencia publicada (alt_ref_seq > 0): código 1, «alt_ref[0]» señalado
+  [OK] cuaternión con q_z = NaN: diagnóstico explícito: código 1, «cuaternión no finito» señalado
+  [OK] cuaternión finito de norma 2: diagnóstico explícito: código 1, «cuaternión de norma 2» señalado
+  [OK] p[1] = NaN en AMBAS capturas con el estado publicado: no es «no disponible»: código 1, «p[1]» señalado
+  [OK] --parcial con v_z = NaN en la placa: fallo, no «parcial superada»: código 1, «v[2]» señalado
+  [OK] compacta con respaldo VÁLIDO y altura del respaldo NaN: código 1
+  [OK] líneas OUT sin --parcial: rechazado (no puede dar equivalencia)
+  [OK] --parcial: marcado PARCIAL, nunca «equivalente»; los t_state con varios estados posibles quedan sin comparar (no se elige el de menor error)
+     compare_runs [PARCIAL — NO es una equivalencia]: 0 de 543 snapshots comparados; 518 con identidad ambigua (no comparados), 25 sin pareja; diagnósticos y compactas NO comparados; fuera de tolerancia 0
+  [OK] decodificador Python v4: snapshots, diagnóstico y compacta sin incidencias
+  [OK] spp_decode --csv: imu.csv (24681) + baro.csv (10519) = 35200 paquetes
+K. decodificador de salida: CRC SPP (capa exterior) frente al CRC de los mensajes (interior); comprobación y rescate
+  [OK] captura de 15 compactas limpia: código 0, 15 compactas, 0 rechazos
+  [OK] REGRESIÓN: CRC SPP de 1 de las 15 compactas: código 1; 14 compactas, rechazados por CRC SPP 1, CRC interno 0 (antes: 14 compactas, «CRC mal 0» y éxito)
+  [OK] --tolerante: rescata las 14, dice qué descartó y devuelve 3 (≠ 0)
+  [OK] --tolerante con una captura limpia: código 0
+  [OK] primer compacta (paquete 0) con CRC SPP malo: código 1, rechazados por CRC SPP 1, CRC interno 0, incompletos 0, salto de secuencia 0
+  [OK] primer diagnóstico (paquete 6) con CRC SPP malo: código 1, rechazados por CRC SPP 1, CRC interno 0, incompletos 0, salto de secuencia 1
+  [OK] primer fragmento 1 de snapshot (paquete 1) con CRC SPP malo: código 1, rechazados por CRC SPP 1, CRC interno 0, incompletos 1, salto de secuencia 1
+  [OK] primer fragmento 3 de snapshot (paquete 3) con CRC SPP malo: código 1, rechazados por CRC SPP 1, CRC interno 0, incompletos 1, salto de secuencia 1
+  [OK] primer fragmento 5 (último) de snapshot (paquete 5) con CRC SPP malo: código 1, rechazados por CRC SPP 1, CRC interno 0, incompletos 1, salto de secuencia 1
+  [OK] en medio: compacta (paquete 3362) con CRC SPP malo: código 1, rechazados por CRC SPP 1, CRC interno 0, incompletos 0, salto de secuencia 1
+  [OK] en medio: diagnóstico (paquete 3410) con CRC SPP malo: código 1, rechazados por CRC SPP 1, CRC interno 0, incompletos 0, salto de secuencia 1
+  [OK] en medio: fragmento 1 de snapshot (paquete 3363) con CRC SPP malo: código 1, rechazados por CRC SPP 1, CRC interno 0, incompletos 1, salto de secuencia 1
+  [OK] en medio: fragmento 3 de snapshot (paquete 3359) con CRC SPP malo: código 1, rechazados por CRC SPP 1, CRC interno 0, incompletos 1, salto de secuencia 1
+  [OK] en medio: fragmento 5 (último) de snapshot (paquete 3361) con CRC SPP malo: código 1, rechazados por CRC SPP 1, CRC interno 0, incompletos 1, salto de secuencia 1
+  [OK] dato de un fragmento alterado con el CRC SPP rehecho: CRC interno 1, CRC SPP 0, código 1
+  [OK] un paquete ausente en medio: salto de secuencia 1, código 1
+  [OK] captura con el último paquete truncado: incidencia del lector mostrada, código 1
+  [OK] ceros intermedios: mostrados, código 1
+L. comparación de capturas idénticas con campos legítimamente no disponibles; selección sin datos
+  [OK] REGRESIÓN arranque normal, 14 s (gen_spp por defecto): mensajes idénticos byte a byte → EQUIVALENTE (código 0); 25 snapshots válidos inercialmente con alt_ref NaN sin BARO_REF, 22 con referencia
+  [OK] REGRESIÓN arranque normal hasta la referencia barométrica (24 s): mensajes idénticos byte a byte → EQUIVALENTE (código 0); 25 snapshots válidos inercialmente con alt_ref NaN sin BARO_REF, 72 con referencia
+  [OK] BARO_REF declarada y alt_ref NaN en la placa: código 1
+  [OK] BARO_REF declarada y alt_ref NaN en AMBAS capturas: código 1 (dos NaN no valen con la referencia disponible)
+  [OK] intervalo NO_ALT_REF con BARO_REF añadida en ambas y alt_ref NaN: código 1
+  [OK] intervalo NO_ALT_REF, alt_ref finito frente a NaN: código 1
+  [OK] intervalo NO_ALT_REF, alt_ref infinito: código 1
+  [OK] REGRESIÓN sin BMP: mensajes idénticos byte a byte → EQUIVALENTE (código 0); 95 snapshots válidos inercialmente con alt_ref NaN sin BARO_REF, 0 con referencia
+  [OK] REGRESIÓN nav_out_decode, archivo vacío: código 2 (tolerante 2), «SIN DATOS» (antes: 0 y «sin corrupción»)
+  [OK] REGRESIÓN nav_out_decode, sólo relleno de ceros: código 2 (tolerante 2), «SIN DATOS» (antes: 0 y «sin corrupción»)
+  [OK] REGRESIÓN nav_out_decode, 395 paquetes y un KPID inexistente: código 2 (tolerante 2), «NO APARECE» (antes: 0 y «sin corrupción»)
+  [OK] paquetes del KPID sin ningún mensaje decodificable (fragmento suelto): código 1 (incompleto), tolerante 2 (nada rescatado)
+  [OK] un paquete del KPID con un mensaje inválido: código 1, «NINGÚN mensaje decodificable»
+  [OK] captura mínima válida (una compacta): código 0, «1 mensajes»
+  [OK] captura mínima válida (un snapshot de 5 fragmentos): código 0
+M. silencio total: la rampa caduca por el reloj; transición en la traza y reproducción exacta
+  [OK] router REAL: silencio de IMU y BMP con consumeData en marcha, aviso de referencia durante el silencio
+  [OK] reproducción COMPLETA de la traza del router: 513/513 paquetes idénticos (cabeceras incluidas); PHASE [(2, 2, 1051, 16051000, 9682)] antes del aviso (registro [9708])
+  [OK] la compacta publica la fase incierta durante el silencio y después (3 de 19)
+  [OK] registro de 24 s sin paquetes de 15 a 18 s: PHASE [(2, 2, 3003, 19770000, 9187)] (silencio por el reloj); reproducción COMPLETA, mensajes idénticos y EQUIVALENTE (código 0)
+  [OK] PHASE alterado (otra causa) con el END recalculado: código 4 en el registro 9187
+G. documentación
+  [OK] docs/PARAMETROS_SPP.md contiene la tabla actual de eskf_svc_params.c
+herramientas SPP: 160/160 OK
+código 0

@@ -1,0 +1,35 @@
+python3 tools/flight_check.py --svc build/svc_replay test/data/openrocket_sim6_nominal.csv \
+  test/data/openrocket_sim6_adverso.csv
+== openrocket_sim6_nominal.csv
+  OpenRocket: despegue 0.048 s, apagado 1.076 s, apogeo 8.923 s (390.8 m), despliegue 9.077 s, impacto 90.189 s; simulado hasta 90.2 s
+  despegue visto en el primer snapshot (10 Hz) de t = 0.10 s; apogeo ESKF 390.9 m, respaldo 391.0 m; ESKF NO VÁLIDA en vuelo: nunca
+  (EXPERIMENTAL y NOT_VALIDATED están siempre en los motivos del servicio; no se listan)
+  rampa      validez ['VÁLIDA'] fuente ['eskf', 'ninguna'] | ESKF |Δh| máx 0.04 m |Δv_z| máx 0.01 m/s σv_z máx 0.02 | respaldo |Δh| máx 0.15 m |Δv_z| máx 0.85 m/s válido 66 %
+             motivos servicio [] núcleo [] capacidades ['actitud', 'ref_baro', 'nav_eskf', 'respaldo_baro']
+  propulsión validez ['DEGRADADA', 'VÁLIDA'] fuente ['eskf'] | ESKF |Δh| máx 0.15 m |Δv_z| máx 4.88 m/s σv_z máx 28.55 | respaldo |Δh| máx 1.32 m |Δv_z| máx 15.36 m/s válido 100 %
+             motivos servicio ['SAT_CANDIDATE'] núcleo ['ACC_SAT'] capacidades ['actitud', 'ref_baro', 'nav_eskf', 'respaldo_baro', 'ref_lanzamiento']
+  planeo     validez ['DEGRADADA'] fuente ['eskf'] | ESKF |Δh| máx 0.10 m |Δv_z| máx 0.22 m/s σv_z máx 2.62 | respaldo |Δh| máx 1.09 m |Δv_z| máx 2.66 m/s válido 100 %
+             motivos servicio ['SAT_CANDIDATE'] núcleo ['ACC_SAT'] capacidades ['actitud', 'ref_baro', 'nav_eskf', 'respaldo_baro', 'ref_lanzamiento']
+  apogeo     validez ['DEGRADADA'] fuente ['eskf'] | ESKF |Δh| máx 0.09 m |Δv_z| máx 0.02 m/s σv_z máx 0.06 | respaldo |Δh| máx 0.17 m |Δv_z| máx 1.53 m/s válido 100 %
+             motivos servicio ['SAT_CANDIDATE'] núcleo ['ACC_SAT'] capacidades ['actitud', 'ref_baro', 'nav_eskf', 'respaldo_baro', 'ref_lanzamiento']
+  descenso   validez ['DEGRADADA'] fuente ['eskf'] | ESKF |Δh| máx 0.25 m |Δv_z| máx 0.37 m/s σv_z máx 0.14 | respaldo |Δh| máx 0.24 m |Δv_z| máx 1.05 m/s válido 100 %
+             motivos servicio ['SAT_CANDIDATE'] núcleo ['ACC_SAT'] capacidades ['actitud', 'ref_baro', 'nav_eskf', 'respaldo_baro', 'ref_lanzamiento']
+  aterrizaje validez ['DEGRADADA'] fuente ['eskf'] | ESKF |Δh| máx 0.04 m |Δv_z| máx 0.03 m/s σv_z máx 0.02 | respaldo |Δh| máx 0.18 m |Δv_z| máx 1.04 m/s válido 100 %
+             motivos servicio ['SAT_CANDIDATE'] núcleo ['ACC_SAT'] capacidades ['actitud', 'ref_baro', 'nav_eskf', 'respaldo_baro', 'ref_lanzamiento']
+== openrocket_sim6_adverso.csv
+  OpenRocket: despegue 0.048 s, apagado 1.076 s, apogeo 7.875 s (310.4 m), despliegue 9.077 s, impacto 72.244 s; simulado hasta 72.2 s
+  despegue visto en el primer snapshot (10 Hz) de t = 0.10 s; apogeo ESKF 310.4 m, respaldo 310.5 m; ESKF NO VÁLIDA en vuelo: desde 9.10 s
+  (EXPERIMENTAL y NOT_VALIDATED están siempre en los motivos del servicio; no se listan)
+  rampa      validez ['DEGRADADA', 'VÁLIDA'] fuente ['baro', 'eskf', 'ninguna'] | ESKF |Δh| máx 0.07 m |Δv_z| máx 0.01 m/s σv_z máx 0.02 | respaldo |Δh| máx 0.12 m |Δv_z| máx 0.92 m/s válido 71 %
+             motivos servicio ['NO_ALT_REF'] núcleo [] capacidades ['actitud', 'ref_baro', 'nav_eskf', 'respaldo_baro']
+  propulsión validez ['DEGRADADA', 'VÁLIDA'] fuente ['eskf'] | ESKF |Δh| máx 0.17 m |Δv_z| máx 5.54 m/s σv_z máx 28.55 | respaldo |Δh| máx 1.09 m |Δv_z| máx 14.64 m/s válido 100 %
+             motivos servicio ['SAT_CANDIDATE'] núcleo ['ACC_SAT'] capacidades ['actitud', 'ref_baro', 'nav_eskf', 'respaldo_baro', 'ref_lanzamiento']
+  planeo     validez ['DEGRADADA'] fuente ['eskf'] | ESKF |Δh| máx 0.08 m |Δv_z| máx 0.38 m/s σv_z máx 2.62 | respaldo |Δh| máx 0.84 m |Δv_z| máx 2.79 m/s válido 100 %
+             motivos servicio ['SAT_CANDIDATE'] núcleo ['ACC_SAT'] capacidades ['actitud', 'ref_baro', 'nav_eskf', 'respaldo_baro', 'ref_lanzamiento']
+  apogeo     validez ['DEGRADADA'] fuente ['eskf'] | ESKF |Δh| máx 0.06 m |Δv_z| máx 0.02 m/s σv_z máx 0.05 | respaldo |Δh| máx 0.16 m |Δv_z| máx 1.89 m/s válido 100 %
+             motivos servicio ['SAT_CANDIDATE'] núcleo ['ACC_SAT'] capacidades ['actitud', 'ref_baro', 'nav_eskf', 'respaldo_baro', 'ref_lanzamiento']
+  descenso   validez ['DEGRADADA', 'NO VÁLIDA'] fuente ['baro', 'eskf'] | ESKF |Δh| máx 0.05 m |Δv_z| máx 0.03 m/s σv_z máx 0.04 | respaldo |Δh| máx 0.29 m |Δv_z| máx 4.69 m/s válido 100 %
+             motivos servicio ['SAT_CANDIDATE', 'SAT_OUT_OF_MODEL'] núcleo ['ACC_SAT'] capacidades ['ref_baro', 'respaldo_baro', 'ref_lanzamiento']
+  aterrizaje validez ['NO VÁLIDA'] fuente ['baro'] | ESKF |Δh| máx — m |Δv_z| máx — m/s σv_z máx — | respaldo |Δh| máx 0.16 m |Δv_z| máx 1.25 m/s válido 100 %
+             motivos servicio ['SAT_CANDIDATE', 'SAT_OUT_OF_MODEL'] núcleo ['ACC_SAT'] capacidades ['ref_baro', 'respaldo_baro', 'ref_lanzamiento']
+código 0

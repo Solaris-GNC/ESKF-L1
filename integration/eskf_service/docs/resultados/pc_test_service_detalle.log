@@ -1,0 +1,618 @@
+== test_service [float]
+1/2. IMU de 44 B, histórico de 48, unidades, offsets ya aplicados, ejes y límites
+  ok: decodifica
+  ok: acel: valor publicado × 9.80665 (offset NO restado otra vez): 4.85800838
+  ok: el publicado ya lleva el offset del productor
+  ok: giro: publicado × π/180 una sola vez: 0.162637338
+  ok: rotación propia aceptada
+  ok: rotación aplicada a la acel.
+  ok: la MISMA rotación al giro
+  ok: reflexión (det −1) rechazada
+  ok: no ortonormal rechazada
+  ok: navegación no arranca con det −1
+  ok: extremo publicado desplazado: 3.9952569 g
+  ok: candidato en el eje x del SENSOR: código (v + offset)·8192 = 32767
+  ok: y llega al eje y del CUERPO por la rotación (0x02)
+  ok: valor fuera del dominio de códigos: rechazado (fuera de rango)
+  ok: giro: candidato en sensor y → cuerpo x (0x08)
+  ok: 48 B histórico sin offsets
+  ok: histórico: ±3.9998779 g es candidato (sin offsets)
+3. CRC, relleno 0xFF, versión, identificador, longitud, payload incompleto y valores
+  ok: relleno 0xFF tras el payload, como packetData
+  ok: paquete válido
+  ok: el relleno participa en el CRC
+  ok: payload corrompido
+  ok: versión 2
+  ok: salida propia: rechazada
+  ok: APID no suscrito
+  ok: longitud 51
+  ok: contadores de rechazo
+  ok: IMU de 40 B y NaN contadas
+  ok: baro fuera de rango y de 8 B contados
+  ok: DMP inválido: diagnóstico
+  ok: IMU inutilizable: pérdida visible
+  ok: ACQ: NO VÁLIDA (sin navegación)
+  ok: DMP inválido no impide usar a y ω
+4. KPID asignados en distinto orden y ausencia de autosuscripción
+  ok: orden 0: suscripción 0x000c
+  ok: orden 1: suscripción 0x0018
+  ok: orden 2: suscripción 0x0048
+  ok: entradas iguales
+  ok: salida = entrada (autosuscripción)
+  ok: KPID de varios bits
+  ok: bit de log
+  ok: bit de FSM
+  ok: salida en el bit de log
+  ok: sin salida (registro parcial) admitido
+  ok: válida
+  ok: init rechaza la autosuscripción
+5. Inicialización dual, configuración pendiente y reinicio
+  ok: primera: arranca
+  ok: consulta antes del primer consume: sesión 1, NO VÁLIDO, NaN (no una estructura a cero)
+  ok: segunda: no reinicia
+  ok: ni configuración, ni cola, ni sesión cambian
+  ok: ESTRICTO arranca el transporte sin navegación
+  ok: primer pendiente: in.gyro_unit_si (12)
+  ok: salida: NO VÁLIDA, motivo y readiness 0x05ff
+  ok: primero la compacta (50 B)
+  ok: sin navegación sólo se publica el fragmento de estado
+  ok: el motivo llega a tierra
+  ok: y el diagnóstico
+  ok: 30 pendientes en ESTRICTO: NaN y de tipo real; en EXPERIMENTAL todos numéricos
+  ok: pérdida enclavada antes del reinicio
+  ok: sesión nueva
+  ok: sin pérdidas ficticias tras el reinicio
+6. Duplicados, pérdidas, wraps de secuencia y de reloj, eventos atrasados
+  ok: repetido descartado (no es pérdida)
+  ok: 65535 → 0 sin hueco; 0 → 3 pierde 2
+  ok: 2 tras 3: antiguo, descartado y contado
+  ok: pérdida enclavada; el antiguo no añade otra
+  ok: ningún reinicio inferido
+  ok: wrap de timestampMs extendido contra el reloj de 64 bits
+  ok: baro tardío: rechazado y contado
+7. Colas llenas, propiedad de los paquetes y pérdidas contadas una sola vez
+  ok: 64 aceptados, 6 descartados y contados
+  ok: consume procesa como mucho max_items (16)
+  ok: y como mucho max_events llamadas a navigation.c
+  ok: las copias no se alteraron al reutilizar el buffer
+  ok: los 6 descartados del buzón se ven como 6 pérdidas de secuencia
+  ok: REGRESIÓN D: el diagnóstico publica 6 pérdidas, no 12 (6)
+8. Caducidad sin sensores (sin marca temporal nueva para un estado congelado)
+  ok: alineado y válido antes de cortar (validez 2, motivos 0x0)
+  ok: sin sensores: STALE
+  ok: t_state no avanza; t_proc sí
+9. Barómetro inicial, referencia de navegación y capacidades
+  ok: sin baro: motivo publicado
+  ok: alinea sin baro; sin referencia de altura (align 1)
+  ok: REGRESIÓN: con alt_ref NaN no se publica VÁLIDO (validez 1)
+  ok: capacidades: actitud sí, navegación ESKF no (caps 0x01)
+  ok: el primer BMP no es una referencia de navegación
+  ok: el respaldo sigue las medidas; el cero de lanzamiento espera 1.0 s de reposo continuo
+  ok: pero sí alimenta el respaldo barométrico (h 0.003 m)
+  ok: referencia en la siguiente ventana de reposo: -0.000 m (altura RELATIVA del productor)
+  ok: navegación ESKF utilizable (caps 0x0f)
+  ok: salto sin aviso: sin sesión nueva, sin despegue del respaldo; la puerta del ESKF lo rechaza
+  ok: aviso en rampa: sesión nueva, sin motivo enclavado
+  ok: nueva referencia tras realinear (0.001 m)
+10. Alineación en reposo, movimiento, despegue, huecos y recuperación en rampa
+  ok: reposo: estimador válido; experimental, sin validar y NO aceptable para vuelo (readiness 0x07ff)
+  ok: heading_known = 0: acimut arbitrario
+  ok: movimiento manual: sigue utilizable (validez 2)
+  ok: despegue detectado (fase 1, validez 2); referencia de lanzamiento congelada
+  ok: 34 ms cada 3.39 s: sin pérdida de secuencia, pero no alinea (ventana de 5 s partida)
+  ok: pérdida en rampa: DEGRADADA (el estimador sigue válido)
+  ok: no se borra antes de una ventana COMPLETA posterior al fallo
+  ok: recuperada tras la ventana de reposo (align_ok 1 → 1: sin realinear)
+  ok: pérdida en vuelo: enclavada y DEGRADADA
+11. Fragmentación y reconstrucción de la salida
+  ok: 37 snapshots, 8 diag, 8 compactas, máx 50 B
+  ok: sesión, id, configuración
+  ok: campos reconstruidos idénticos
+  ok: banderas: experimental, marcas en ms, no aceptado
+  ok: capacidades y fuente en el fragmento de estado
+  ok: diagnóstico decodificado
+  ok: fragmento perdido: incompleto, el siguiente se reconstruye
+  ok: fragmentos de snapshots distintos no se mezclan
+  ok: dato alterado: CRC del snapshot
+  ok: sin vaciar: omitidos 3
+12. Las mismas entradas por un nav_t independiente dan la misma salida
+  ok: 6062 llamadas idénticas (ticks incluidos), ok=1
+13. Trabajo y memoria acotados; traza de validación
+  ok: máx 16 paquetes/llamada
+  sizeof(eskf_svc_t) = 19616 bytes (estático; sin memoria dinámica)
+  ok: memoria del servicio
+  ok: traza llena sin sobrescribir: 256 registros, 428 perdidos
+  ok: primer registro: configuración exacta (id, perfil, esquema, arranque y reloj del inicio)
+  ok: después, la entrega de la IMU
+  ok: traza completa: 1237 registros (618 entregas)
+  ok: la traza registra publicado / aplazado / perdido con la cabecera real del paquete
+  ok: y los contadores
+  ok: cierre con la traza llena: E_FULL (vaciar y repetir)
+  ok: END: 256 registros, CRC 0xe5ba, 71 perdidos por desbordamiento (declarados)
+  ok: tras el cierre no se registra nada
+  traza: 618 registros/s × 16 B = 9.9 kB/s con IMU 225 Hz + baro 100 Hz
+14. REGRESIÓN A: una marca futura no contamina el seguimiento del flujo
+  ok: rechazada ANTES de tocar el flujo (last_t 12.995 s)
+  ok: las 225 IMU siguientes se aceptan (225)
+  ok: y la muestra rechazada cuenta UNA pérdida (salto de secuencia)
+  ok: DEGRADADA y enclavada hasta una ventana de reposo posterior
+  ok: la ventana 11–16 s empezó antes del fallo: no basta
+  ok: recuperada con la ventana 16–21 s
+  ok: baro futuro: rechazado sin tocar el flujo
+15. REGRESIÓN B: paquetes antiguos, reinicio parcial del productor y reinicio pedido en vuelo
+  ok: en vuelo
+  ok: antiguos en vuelo: descartados y contados; ni sesión nueva ni vuelta a RAMPA
+  ok: el flujo sigue (validez 2)
+  ok: reinicio pedido en vuelo: RECHAZADO y marcado
+  ok: secuencia reiniciada con tiempo continuo: resincronización, sin pérdidas inventadas ni sesión nueva
+  ok: DEGRADADA (no se sabe si faltó algo)
+  ok: recuperada tras una ventana de reposo
+  ok: arranque completo: lo distingue boot_id (sesión 1, arranque 9)
+16. Baro: medida aislada inválida, atípico, pérdida y caducidad del respaldo
+  ok: una medida inválida se descarta; el baro sigue en uso (49 aplicadas después)
+  ok: atípico: el respaldo lo descarta (h -0.00 m) y sigue válido
+  ok: 0.3 s sin baro: respaldo aún válido
+  ok: 1 s sin baro: el respaldo caduca (edad 1.00 s); la fuente sigue siendo el ESKF
+  ok: el ESKF en rampa no depende del baro
+17. Cambio de referencia del baro avisado en vuelo
+  ok: en vuelo: sin sesión nueva y sin baro para el ESKF (50 retenidos)
+  ok: DEGRADADA, respaldo invalidado; el ESKF sigue publicándose
+  ok: aviso registrado en la traza
+  ok: 6 s después: ni ESKF ni respaldo usan el baro; sin referencia reconstruida (sesión 1)
+  ok: el ESKF continúa DEGRADADO y refleja la falta de correcciones (BARO_TIMEOUT)
+18. Saturación ±4 g: continuación experimental, presupuesto, fuera de modelo
+  ok: candidatos del dominio de códigos → saturación en navigation.c (135)
+  ok: durante la combustión: DEGRADADA (no válida no)
+  ok: la incertidumbre de velocidad crece: σv_z 20.189 frente a 0.048 m/s sin saturar
+  ok: el baro se sigue aplicando durante la saturación (50; 50 sin saturar)
+  ok: tras la combustión: sigue DEGRADADA (incidente enclavado en el historial)
+  ok: altura ESKF 13.66 m frente a 13.63 m reales a 14 s
+  ok: saturación más larga que el modelo: NO VÁLIDA
+  ok: el respaldo barométrico sigue: fuente BARO, v_z 46.8 m/s (hacia arriba)
+  ok: golpe de 6 g a t_despegue + 2 s (ventana 1.5 s): FUERA DE MODELO → NO VÁLIDA
+  ok: el respaldo sigue disponible
+19. Respaldo barométrico independiente: signo, referencia congelada, sin ESKF
+  ok: rampa: h -0.025 m, v -0.218 m/s; fuente BARO (ACQ)
+  ok: sin ESKF: referencia congelada al subir > 10 m
+  ok: h 23.19 m (real 23.29), v_z 20.85 m/s (real 19.61, positiva hacia arriba)
+  ok: sin ESKF: su estado se publica NO VÁLIDO, sin posición inventada
+20. Salida operativa compacta (≤ 50 B, autónoma)
+  ok: la compacta sale primero (50 B)
+  ok: decodificada sin otros mensajes: sesión, arranque, configuración, validez, capacidades, fuente
+  ok: alturas y velocidades (positivas hacia arriba): ESKF 16.92 m 22.53 m/s; respaldo 16.80 m 23.32 m/s
+  ok: tiempo y edades reales: el respaldo caduca (edad 1103 ms) y lo dice
+  ok: banderas y motivos
+  ok: TELEMETRÍA: 5 compactas, 0 estados, 1 diagnósticos en 5 s
+  ok: cambiar la salida no se confunde con una procedencia externa
+21. Consultas concurrentes: copia completa bajo sección crítica (sin datos a medias)
+  ok: 276277 lecturas concurrentes, 0 incoherentes
+22. Validación de la configuración y preparación ligada a la configuración exacta
+  ok: EXPERIMENTAL válida y navega
+  ok: perfil no admitido
+  ok: offset no finito
+  ok: divisor infinito
+  ok: límites del baro incoherentes
+  ok: respaldo: β > α
+  ok: respaldo: puerta NaN
+  ok: máscara sin el fragmento de estado
+  ok: compacta más rápida que 10 Hz
+  ok: tolerancia de futuro negativa
+  ok: sin continuación del giróscopo
+  ok: puente de huecos deshabilitado
+  ok: continuación sin ventana del motor
+  ok: valor no finito en la tabla: why_code = fila
+  ok: EXPERIMENTAL: perfil y placa sin validar (0x07ff)
+  ok: valor de aviónica: OVERRIDE y otro config_id
+  ok: ESTRICTO: sin bit de perfil; placa sin validar
+  ok: publicadas con la salida
+  ok: ESTRICTO con valores externos: navega, pero flight_accept = 0 (readiness 0x0dff)
+23. REGRESIÓN: los rechazos no renuevan la frescura del respaldo barométrico
+  ok: 151 aceptadas: válido, última observación a 2,500 s
+  ok: las 19 se rechazan (19)
+  ok: a 600 ms de la última aceptada: NO válido, antigüedad 600 ms (antes: válido con 410 ms)
+  ok: sin capacidad de respaldo ni fuente
+  ok: 2 s de rechazos/incoherencias: ninguna salida válida con antigüedad > caducidad
+24. REGRESIÓN: la primera lectura anómala no fija la referencia; el cero de lanzamiento se conserva
+  ok: respaldo válido con h 0.00 m y referencia 0.00 m (antes: −85,2 m)
+  ok: menos de 20 muestras coherentes: no válido
+  ok: en vuelo, referencia congelada (-0.002 m)
+  ok: corte de 0,4 s: aún válido, con su antigüedad real (406 ms <= 500)
+  ok: corte de 0,6 s: caducado (antigüedad 597 ms)
+  ok: vuelven las medidas: recuperando (menos de 20 coherentes), NO válido
+  ok: recuperado con ventana coherente: mismo cero (-0.002 m), h 37.0 m (real 37.0)
+  ok: ráfaga de 0,1 s: sigue con su última aceptada (antigüedad 101 ms)
+  ok: tras la ráfaga breve, medidas aceptadas sin recuperación
+  ok: ráfaga de 0,3 s: recuperando, NO válido
+  ok: recuperado de nuevo, cero intacto (3 recuperaciones)
+25. REGRESIÓN: las muestras anteriores a una sesión no la inicializan
+  ok: rampa: respaldo estable y ESKF válido
+  ok: 21 muestras pendientes en el buzón
+  ok: sesión nueva; 23 muestras anteriores descartadas sin pérdidas ficticias
+  ok: sin falso despegue ni referencia congelada
+  ok: respaldo con referencia nueva 100.00 m y h 0.00 m (antes: 96,3 m y despegue falso)
+  ok: ESKF realineado con alt_ref 100.00 m
+  ok: un reinicio posterior en rampa se acepta
+  ok: dos cambios seguidos con buzón ocupado: sesión 5, referencia 140.00 m, h 0.01 m, sin pérdidas
+26. Pérdida breve de IMU en vuelo (admisible / no admisible) y fuentes publicadas
+  ok: intervalo admisible (8,9 ms): sigue DEGRADADO, fuente ESKF
+  ok: hueco de 30 ms: ESKF NO VÁLIDO, fuente BARO (respaldo válido)
+  ok: en vuelo no se realinea ni se reinicia: sigue NO VÁLIDO (align_ok 1)
+  ok: ninguna fuente válida: fuente NINGUNA, capacidades 0x12
+  ok: la compacta se sigue publicando con su estado: fuente NINGUNA, respaldo caducado (2102 ms)
+27. REGRESIÓN: tras reconocer el vuelo no hay alineación, ZUPT, referencia nueva ni reinicio
+  ok: alineado en rampa; sin IMU en el ascenso y vuelta en el descenso: align_ok 1 → 1
+  ok: vuelo enclavado; fase publicada VUELO; ESKF NO VÁLIDO y fuera de servicio (motivos 0x3301)
+  ok: núcleo publicado NO VÁLIDO y congelado; why 0x8008
+  ok: fuente BARO: 37.8 m (real 37.8; antes el ESKF publicaba ~0 m y VÁLIDO)
+  ok: cero de rampa intacto bit a bit (0.001 m); vuelo reconocido por altura del respaldo (detector 2); ZUPT 130 → 130
+  ok: las muestras del descenso no llegan a navigation.c (4107 retenidas)
+  ok: reinicio rechazado
+  ok: nunca alineado en rampa: tampoco hay alineación inicial en el descenso (align_ok 0)
+  ok: el respaldo no se sustituye (37.8 m)
+  ok: IMU perdida en el despegue y baro tardío: vuelo reconocido por |v_z| del respaldo; sin realinear (align_ok 1)
+  ok: sin referencia de rampa: respaldo NO válido, sin cero inventado; fuente NINGUNA; v_z -5.0 m/s sigue publicándose
+  ok: sin IMU ni baro en rampa: vuelo reconocido, ni alineación ni cero; medidas registradas (1480 aceptadas)
+28. REGRESIÓN: el cero de lanzamiento no se fija con el primer baro recibido en vuelo
+  ok: despegue detectado por navigation.c
+  ok: el respaldo sigue las medidas (80 aceptadas, v_z 13.6 m/s)
+  ok: sin referencia de rampa: altura sobre el lanzamiento desconocida, NO válido (antes: 0,44 m válido con cero en 42,5 m)
+  ok: una recuperación en vuelo tampoco fija un cero (2 recuperaciones)
+  ok: primer baro en el apogeo: sigue las medidas sin fijar el cero (el reposo no dura 1.0 s)
+  ok: vuelo reconocido en el descenso por |v_z| = -5.0 m/s; sin cero ni fuente; sin realinear
+29. REGRESIÓN: fase incierta; un descenso lento no se convierte en rampa (alineación, ZUPT, referencias)
+  ok: descenso a 2.0 m/s, alineado en rampa: align_ok 1 → 1, ZUPT 129 → 129, sin referencia de navigation.c
+  ok:   fase INCIERTA publicada (ni rampa ni vuelo); ESKF fuera de servicio (why 0x8009, 3625 muestras retenidas)
+  ok:   respaldo siguiendo (v_z -2.09 m/s) sin cero nuevo; fuente NINGUNA (real 126.1 m; antes: ~−7,5 ESKF m VÁLIDO)
+  ok:   snapshot y compacta publican la fase incierta (esquema v4)
+  ok: descenso a 2.0 m/s, nunca alineado: align_ok 0 → 0, ZUPT 0 → 0, sin referencia de navigation.c
+  ok:   fase INCIERTA publicada (ni rampa ni vuelo); ESKF fuera de servicio (why 0x8009, 3625 muestras retenidas)
+  ok:   respaldo siguiendo (v_z -1.94 m/s) sin cero nuevo; fuente NINGUNA (real 126.1 m; antes: ~−7,5 ESKF m VÁLIDO)
+  ok:   snapshot y compacta publican la fase incierta (esquema v4)
+  ok: descenso a 0.8 m/s, alineado en rampa: align_ok 1 → 1, ZUPT 129 → 129, sin referencia de navigation.c
+  ok:   fase INCIERTA publicada (ni rampa ni vuelo); ESKF fuera de servicio (why 0x8009, 3625 muestras retenidas)
+  ok:   respaldo siguiendo (v_z -0.68 m/s) sin cero nuevo; fuente NINGUNA (real 140.5 m; antes: ~−3,5 respaldo m VÁLIDO)
+  ok:   snapshot y compacta publican la fase incierta (esquema v4)
+  ok: descenso a 0.8 m/s, nunca alineado: align_ok 0 → 0, ZUPT 0 → 0, sin referencia de navigation.c
+  ok:   fase INCIERTA publicada (ni rampa ni vuelo); ESKF fuera de servicio (why 0x8009, 3625 muestras retenidas)
+  ok:   respaldo siguiendo (v_z -0.81 m/s) sin cero nuevo; fuente NINGUNA (real 140.5 m; antes: ~−3,5 respaldo m VÁLIDO)
+  ok:   snapshot y compacta publican la fase incierta (esquema v4)
+  ok: arranque normal: rampa confirmada, VÁLIDO, fuente ESKF, respaldo válido
+  ok: sin BMP durante 39 s: rampa confirmada por la IMU; DEGRADADO por NO_ALT_REF
+  ok: BMP a 40 s: referencias de navegación y del respaldo en rampa; VÁLIDO (alt_ref 0.00 m)
+  ok: parones de 34 ms en rampa: la rampa sigue confirmada
+  ok: sin baro, hueco de IMU de 0,3 s en rampa (≤ svc.pad_gap_max_s): rampa confirmada y realinea (align_ok 2)
+  ok: sin baro, hueco de 0,6 s: fase INCIERTA (política conservadora, hueco 605 ms), no realinea
+  ok: reinicio pedido por el anfitrión (declara rampa): sesión nueva, rampa confirmada, alinea
+  ok: aviso de referencia con fase incierta: sin sesión nueva, baro fuera
+30. REGRESIÓN: un respaldo caducado sólo vuelve a ser válido con una ventana coherente nueva
+  ok: 19 rechazadas cada 60 ms: NO válido, antigüedad 1140 ms; caducado en la 10.ª (600 ms > 500): ventana pendiente
+  ok: una medida compatible tras la caducidad: RECUPERANDO, NO válido, sin capacidad ni fuente (antes: TRACK y válido)
+  ok: 19 coherentes: todavía recuperando
+  ok: 20 coherentes: válido otra vez con la MISMA referencia (0.000 m)
+  ok: compatible con antigüedad exactamente 500 ms: aceptada y válida
+  ok: con 500 ms + 1 ms: caducado, hace falta la ventana
+  ok: intervalos de 10–99 ms y 19 rechazos en 380 ms: sigue en seguimiento y válido, sin ventanas nuevas
+  ok: en vuelo: caducado, recuperando, cero intacto
+  ok: en vuelo: válido tras la ventana con el MISMO cero (0.003 m)
+31. REGRESIÓN: la rampa confirmada caduca también por el reloj en silencio total
+  ok: navegación VÁLIDA en rampa hasta 15 s
+  ok: silencio de 1.04 s (< latencia admitida): ESKF NO VÁLIDO por antigüedad, rampa aún confirmada
+  ok: límite exacto (1.050 s sin muestras procesadas): todavía rampa
+  ok: 1 µs más: vencimiento por el reloj → fase INCIERTA (causa 2, why 0x8009), navigation.c cortado
+  ok: la transición queda en la traza (PHASE, causa silencio, 1050 ms, en el reloj del consume)
+  ok: aviso de referencia a 17 s: conserva la sesión, baro fuera el resto de la sesión (antes: sesión nueva y 10 s de rampa)
+  ok: las muestras vuelven a 18 s: sigue INCIERTA, sin realinear (align_ok 1), baro sin usar
+  ok: reinicio pedido por el anfitrión en rampa: sesión nueva, rampa confirmada, VÁLIDO
+  ok: parón de 0,9 s del router y latencia de 0,9 s después (cola continua): la rampa sigue confirmada
+  ok: parón de 1,2 s (> latencia admitida 1.05 s): caduca por el reloj (con la cola real de 128 paquetes habría además un hueco de muestras)
+  ok: sin datos tras el inicio: rampa por contrato hasta 10 s + 1.05 s; después, INCIERTA
+275/275 comprobaciones correctas
+== test_service [double]
+1/2. IMU de 44 B, histórico de 48, unidades, offsets ya aplicados, ejes y límites
+  ok: decodifica
+  ok: acel: valor publicado × 9.80665 (offset NO restado otra vez): 4.85800838
+  ok: el publicado ya lleva el offset del productor
+  ok: giro: publicado × π/180 una sola vez: 0.162637338
+  ok: rotación propia aceptada
+  ok: rotación aplicada a la acel.
+  ok: la MISMA rotación al giro
+  ok: reflexión (det −1) rechazada
+  ok: no ortonormal rechazada
+  ok: navegación no arranca con det −1
+  ok: extremo publicado desplazado: 3.9952569 g
+  ok: candidato en el eje x del SENSOR: código (v + offset)·8192 = 32767
+  ok: y llega al eje y del CUERPO por la rotación (0x02)
+  ok: valor fuera del dominio de códigos: rechazado (fuera de rango)
+  ok: giro: candidato en sensor y → cuerpo x (0x08)
+  ok: 48 B histórico sin offsets
+  ok: histórico: ±3.9998779 g es candidato (sin offsets)
+3. CRC, relleno 0xFF, versión, identificador, longitud, payload incompleto y valores
+  ok: relleno 0xFF tras el payload, como packetData
+  ok: paquete válido
+  ok: el relleno participa en el CRC
+  ok: payload corrompido
+  ok: versión 2
+  ok: salida propia: rechazada
+  ok: APID no suscrito
+  ok: longitud 51
+  ok: contadores de rechazo
+  ok: IMU de 40 B y NaN contadas
+  ok: baro fuera de rango y de 8 B contados
+  ok: DMP inválido: diagnóstico
+  ok: IMU inutilizable: pérdida visible
+  ok: ACQ: NO VÁLIDA (sin navegación)
+  ok: DMP inválido no impide usar a y ω
+4. KPID asignados en distinto orden y ausencia de autosuscripción
+  ok: orden 0: suscripción 0x000c
+  ok: orden 1: suscripción 0x0018
+  ok: orden 2: suscripción 0x0048
+  ok: entradas iguales
+  ok: salida = entrada (autosuscripción)
+  ok: KPID de varios bits
+  ok: bit de log
+  ok: bit de FSM
+  ok: salida en el bit de log
+  ok: sin salida (registro parcial) admitido
+  ok: válida
+  ok: init rechaza la autosuscripción
+5. Inicialización dual, configuración pendiente y reinicio
+  ok: primera: arranca
+  ok: consulta antes del primer consume: sesión 1, NO VÁLIDO, NaN (no una estructura a cero)
+  ok: segunda: no reinicia
+  ok: ni configuración, ni cola, ni sesión cambian
+  ok: ESTRICTO arranca el transporte sin navegación
+  ok: primer pendiente: in.gyro_unit_si (12)
+  ok: salida: NO VÁLIDA, motivo y readiness 0x05ff
+  ok: primero la compacta (50 B)
+  ok: sin navegación sólo se publica el fragmento de estado
+  ok: el motivo llega a tierra
+  ok: y el diagnóstico
+  ok: 30 pendientes en ESTRICTO: NaN y de tipo real; en EXPERIMENTAL todos numéricos
+  ok: pérdida enclavada antes del reinicio
+  ok: sesión nueva
+  ok: sin pérdidas ficticias tras el reinicio
+6. Duplicados, pérdidas, wraps de secuencia y de reloj, eventos atrasados
+  ok: repetido descartado (no es pérdida)
+  ok: 65535 → 0 sin hueco; 0 → 3 pierde 2
+  ok: 2 tras 3: antiguo, descartado y contado
+  ok: pérdida enclavada; el antiguo no añade otra
+  ok: ningún reinicio inferido
+  ok: wrap de timestampMs extendido contra el reloj de 64 bits
+  ok: baro tardío: rechazado y contado
+7. Colas llenas, propiedad de los paquetes y pérdidas contadas una sola vez
+  ok: 64 aceptados, 6 descartados y contados
+  ok: consume procesa como mucho max_items (16)
+  ok: y como mucho max_events llamadas a navigation.c
+  ok: las copias no se alteraron al reutilizar el buffer
+  ok: los 6 descartados del buzón se ven como 6 pérdidas de secuencia
+  ok: REGRESIÓN D: el diagnóstico publica 6 pérdidas, no 12 (6)
+8. Caducidad sin sensores (sin marca temporal nueva para un estado congelado)
+  ok: alineado y válido antes de cortar (validez 2, motivos 0x0)
+  ok: sin sensores: STALE
+  ok: t_state no avanza; t_proc sí
+9. Barómetro inicial, referencia de navegación y capacidades
+  ok: sin baro: motivo publicado
+  ok: alinea sin baro; sin referencia de altura (align 1)
+  ok: REGRESIÓN: con alt_ref NaN no se publica VÁLIDO (validez 1)
+  ok: capacidades: actitud sí, navegación ESKF no (caps 0x01)
+  ok: el primer BMP no es una referencia de navegación
+  ok: el respaldo sigue las medidas; el cero de lanzamiento espera 1.0 s de reposo continuo
+  ok: pero sí alimenta el respaldo barométrico (h 0.003 m)
+  ok: referencia en la siguiente ventana de reposo: -0.000 m (altura RELATIVA del productor)
+  ok: navegación ESKF utilizable (caps 0x0f)
+  ok: salto sin aviso: sin sesión nueva, sin despegue del respaldo; la puerta del ESKF lo rechaza
+  ok: aviso en rampa: sesión nueva, sin motivo enclavado
+  ok: nueva referencia tras realinear (0.001 m)
+10. Alineación en reposo, movimiento, despegue, huecos y recuperación en rampa
+  ok: reposo: estimador válido; experimental, sin validar y NO aceptable para vuelo (readiness 0x07ff)
+  ok: heading_known = 0: acimut arbitrario
+  ok: movimiento manual: sigue utilizable (validez 2)
+  ok: despegue detectado (fase 1, validez 2); referencia de lanzamiento congelada
+  ok: 34 ms cada 3.39 s: sin pérdida de secuencia, pero no alinea (ventana de 5 s partida)
+  ok: pérdida en rampa: DEGRADADA (el estimador sigue válido)
+  ok: no se borra antes de una ventana COMPLETA posterior al fallo
+  ok: recuperada tras la ventana de reposo (align_ok 1 → 1: sin realinear)
+  ok: pérdida en vuelo: enclavada y DEGRADADA
+11. Fragmentación y reconstrucción de la salida
+  ok: 37 snapshots, 8 diag, 8 compactas, máx 50 B
+  ok: sesión, id, configuración
+  ok: campos reconstruidos idénticos
+  ok: banderas: experimental, marcas en ms, no aceptado
+  ok: capacidades y fuente en el fragmento de estado
+  ok: diagnóstico decodificado
+  ok: fragmento perdido: incompleto, el siguiente se reconstruye
+  ok: fragmentos de snapshots distintos no se mezclan
+  ok: dato alterado: CRC del snapshot
+  ok: sin vaciar: omitidos 3
+12. Las mismas entradas por un nav_t independiente dan la misma salida
+  ok: 6062 llamadas idénticas (ticks incluidos), ok=1
+13. Trabajo y memoria acotados; traza de validación
+  ok: máx 16 paquetes/llamada
+  sizeof(eskf_svc_t) = 20848 bytes (estático; sin memoria dinámica)
+  ok: memoria del servicio
+  ok: traza llena sin sobrescribir: 256 registros, 428 perdidos
+  ok: primer registro: configuración exacta (id, perfil, esquema, arranque y reloj del inicio)
+  ok: después, la entrega de la IMU
+  ok: traza completa: 1237 registros (618 entregas)
+  ok: la traza registra publicado / aplazado / perdido con la cabecera real del paquete
+  ok: y los contadores
+  ok: cierre con la traza llena: E_FULL (vaciar y repetir)
+  ok: END: 256 registros, CRC 0xbbf2, 71 perdidos por desbordamiento (declarados)
+  ok: tras el cierre no se registra nada
+  traza: 618 registros/s × 16 B = 9.9 kB/s con IMU 225 Hz + baro 100 Hz
+14. REGRESIÓN A: una marca futura no contamina el seguimiento del flujo
+  ok: rechazada ANTES de tocar el flujo (last_t 12.995 s)
+  ok: las 225 IMU siguientes se aceptan (225)
+  ok: y la muestra rechazada cuenta UNA pérdida (salto de secuencia)
+  ok: DEGRADADA y enclavada hasta una ventana de reposo posterior
+  ok: la ventana 11–16 s empezó antes del fallo: no basta
+  ok: recuperada con la ventana 16–21 s
+  ok: baro futuro: rechazado sin tocar el flujo
+15. REGRESIÓN B: paquetes antiguos, reinicio parcial del productor y reinicio pedido en vuelo
+  ok: en vuelo
+  ok: antiguos en vuelo: descartados y contados; ni sesión nueva ni vuelta a RAMPA
+  ok: el flujo sigue (validez 2)
+  ok: reinicio pedido en vuelo: RECHAZADO y marcado
+  ok: secuencia reiniciada con tiempo continuo: resincronización, sin pérdidas inventadas ni sesión nueva
+  ok: DEGRADADA (no se sabe si faltó algo)
+  ok: recuperada tras una ventana de reposo
+  ok: arranque completo: lo distingue boot_id (sesión 1, arranque 9)
+16. Baro: medida aislada inválida, atípico, pérdida y caducidad del respaldo
+  ok: una medida inválida se descarta; el baro sigue en uso (49 aplicadas después)
+  ok: atípico: el respaldo lo descarta (h -0.00 m) y sigue válido
+  ok: 0.3 s sin baro: respaldo aún válido
+  ok: 1 s sin baro: el respaldo caduca (edad 1.00 s); la fuente sigue siendo el ESKF
+  ok: el ESKF en rampa no depende del baro
+17. Cambio de referencia del baro avisado en vuelo
+  ok: en vuelo: sin sesión nueva y sin baro para el ESKF (50 retenidos)
+  ok: DEGRADADA, respaldo invalidado; el ESKF sigue publicándose
+  ok: aviso registrado en la traza
+  ok: 6 s después: ni ESKF ni respaldo usan el baro; sin referencia reconstruida (sesión 1)
+  ok: el ESKF continúa DEGRADADO y refleja la falta de correcciones (BARO_TIMEOUT)
+18. Saturación ±4 g: continuación experimental, presupuesto, fuera de modelo
+  ok: candidatos del dominio de códigos → saturación en navigation.c (135)
+  ok: durante la combustión: DEGRADADA (no válida no)
+  ok: la incertidumbre de velocidad crece: σv_z 20.189 frente a 0.048 m/s sin saturar
+  ok: el baro se sigue aplicando durante la saturación (50; 50 sin saturar)
+  ok: tras la combustión: sigue DEGRADADA (incidente enclavado en el historial)
+  ok: altura ESKF 13.66 m frente a 13.63 m reales a 14 s
+  ok: saturación más larga que el modelo: NO VÁLIDA
+  ok: el respaldo barométrico sigue: fuente BARO, v_z 46.8 m/s (hacia arriba)
+  ok: golpe de 6 g a t_despegue + 2 s (ventana 1.5 s): FUERA DE MODELO → NO VÁLIDA
+  ok: el respaldo sigue disponible
+19. Respaldo barométrico independiente: signo, referencia congelada, sin ESKF
+  ok: rampa: h -0.025 m, v -0.218 m/s; fuente BARO (ACQ)
+  ok: sin ESKF: referencia congelada al subir > 10 m
+  ok: h 23.19 m (real 23.29), v_z 20.85 m/s (real 19.61, positiva hacia arriba)
+  ok: sin ESKF: su estado se publica NO VÁLIDO, sin posición inventada
+20. Salida operativa compacta (≤ 50 B, autónoma)
+  ok: la compacta sale primero (50 B)
+  ok: decodificada sin otros mensajes: sesión, arranque, configuración, validez, capacidades, fuente
+  ok: alturas y velocidades (positivas hacia arriba): ESKF 16.92 m 22.53 m/s; respaldo 16.80 m 23.32 m/s
+  ok: tiempo y edades reales: el respaldo caduca (edad 1103 ms) y lo dice
+  ok: banderas y motivos
+  ok: TELEMETRÍA: 5 compactas, 0 estados, 1 diagnósticos en 5 s
+  ok: cambiar la salida no se confunde con una procedencia externa
+21. Consultas concurrentes: copia completa bajo sección crítica (sin datos a medias)
+  ok: 281053 lecturas concurrentes, 0 incoherentes
+22. Validación de la configuración y preparación ligada a la configuración exacta
+  ok: EXPERIMENTAL válida y navega
+  ok: perfil no admitido
+  ok: offset no finito
+  ok: divisor infinito
+  ok: límites del baro incoherentes
+  ok: respaldo: β > α
+  ok: respaldo: puerta NaN
+  ok: máscara sin el fragmento de estado
+  ok: compacta más rápida que 10 Hz
+  ok: tolerancia de futuro negativa
+  ok: sin continuación del giróscopo
+  ok: puente de huecos deshabilitado
+  ok: continuación sin ventana del motor
+  ok: valor no finito en la tabla: why_code = fila
+  ok: EXPERIMENTAL: perfil y placa sin validar (0x07ff)
+  ok: valor de aviónica: OVERRIDE y otro config_id
+  ok: ESTRICTO: sin bit de perfil; placa sin validar
+  ok: publicadas con la salida
+  ok: ESTRICTO con valores externos: navega, pero flight_accept = 0 (readiness 0x0dff)
+23. REGRESIÓN: los rechazos no renuevan la frescura del respaldo barométrico
+  ok: 151 aceptadas: válido, última observación a 2,500 s
+  ok: las 19 se rechazan (19)
+  ok: a 600 ms de la última aceptada: NO válido, antigüedad 600 ms (antes: válido con 410 ms)
+  ok: sin capacidad de respaldo ni fuente
+  ok: 2 s de rechazos/incoherencias: ninguna salida válida con antigüedad > caducidad
+24. REGRESIÓN: la primera lectura anómala no fija la referencia; el cero de lanzamiento se conserva
+  ok: respaldo válido con h 0.00 m y referencia 0.00 m (antes: −85,2 m)
+  ok: menos de 20 muestras coherentes: no válido
+  ok: en vuelo, referencia congelada (-0.002 m)
+  ok: corte de 0,4 s: aún válido, con su antigüedad real (406 ms <= 500)
+  ok: corte de 0,6 s: caducado (antigüedad 597 ms)
+  ok: vuelven las medidas: recuperando (menos de 20 coherentes), NO válido
+  ok: recuperado con ventana coherente: mismo cero (-0.002 m), h 37.0 m (real 37.0)
+  ok: ráfaga de 0,1 s: sigue con su última aceptada (antigüedad 101 ms)
+  ok: tras la ráfaga breve, medidas aceptadas sin recuperación
+  ok: ráfaga de 0,3 s: recuperando, NO válido
+  ok: recuperado de nuevo, cero intacto (3 recuperaciones)
+25. REGRESIÓN: las muestras anteriores a una sesión no la inicializan
+  ok: rampa: respaldo estable y ESKF válido
+  ok: 21 muestras pendientes en el buzón
+  ok: sesión nueva; 23 muestras anteriores descartadas sin pérdidas ficticias
+  ok: sin falso despegue ni referencia congelada
+  ok: respaldo con referencia nueva 100.00 m y h 0.00 m (antes: 96,3 m y despegue falso)
+  ok: ESKF realineado con alt_ref 100.00 m
+  ok: un reinicio posterior en rampa se acepta
+  ok: dos cambios seguidos con buzón ocupado: sesión 5, referencia 140.00 m, h 0.01 m, sin pérdidas
+26. Pérdida breve de IMU en vuelo (admisible / no admisible) y fuentes publicadas
+  ok: intervalo admisible (8,9 ms): sigue DEGRADADO, fuente ESKF
+  ok: hueco de 30 ms: ESKF NO VÁLIDO, fuente BARO (respaldo válido)
+  ok: en vuelo no se realinea ni se reinicia: sigue NO VÁLIDO (align_ok 1)
+  ok: ninguna fuente válida: fuente NINGUNA, capacidades 0x12
+  ok: la compacta se sigue publicando con su estado: fuente NINGUNA, respaldo caducado (2102 ms)
+27. REGRESIÓN: tras reconocer el vuelo no hay alineación, ZUPT, referencia nueva ni reinicio
+  ok: alineado en rampa; sin IMU en el ascenso y vuelta en el descenso: align_ok 1 → 1
+  ok: vuelo enclavado; fase publicada VUELO; ESKF NO VÁLIDO y fuera de servicio (motivos 0x3301)
+  ok: núcleo publicado NO VÁLIDO y congelado; why 0x8008
+  ok: fuente BARO: 37.8 m (real 37.8; antes el ESKF publicaba ~0 m y VÁLIDO)
+  ok: cero de rampa intacto bit a bit (0.001 m); vuelo reconocido por altura del respaldo (detector 2); ZUPT 130 → 130
+  ok: las muestras del descenso no llegan a navigation.c (4107 retenidas)
+  ok: reinicio rechazado
+  ok: nunca alineado en rampa: tampoco hay alineación inicial en el descenso (align_ok 0)
+  ok: el respaldo no se sustituye (37.8 m)
+  ok: IMU perdida en el despegue y baro tardío: vuelo reconocido por |v_z| del respaldo; sin realinear (align_ok 1)
+  ok: sin referencia de rampa: respaldo NO válido, sin cero inventado; fuente NINGUNA; v_z -5.0 m/s sigue publicándose
+  ok: sin IMU ni baro en rampa: vuelo reconocido, ni alineación ni cero; medidas registradas (1480 aceptadas)
+28. REGRESIÓN: el cero de lanzamiento no se fija con el primer baro recibido en vuelo
+  ok: despegue detectado por navigation.c
+  ok: el respaldo sigue las medidas (80 aceptadas, v_z 13.6 m/s)
+  ok: sin referencia de rampa: altura sobre el lanzamiento desconocida, NO válido (antes: 0,44 m válido con cero en 42,5 m)
+  ok: una recuperación en vuelo tampoco fija un cero (2 recuperaciones)
+  ok: primer baro en el apogeo: sigue las medidas sin fijar el cero (el reposo no dura 1.0 s)
+  ok: vuelo reconocido en el descenso por |v_z| = -5.0 m/s; sin cero ni fuente; sin realinear
+29. REGRESIÓN: fase incierta; un descenso lento no se convierte en rampa (alineación, ZUPT, referencias)
+  ok: descenso a 2.0 m/s, alineado en rampa: align_ok 1 → 1, ZUPT 129 → 129, sin referencia de navigation.c
+  ok:   fase INCIERTA publicada (ni rampa ni vuelo); ESKF fuera de servicio (why 0x8009, 3625 muestras retenidas)
+  ok:   respaldo siguiendo (v_z -2.09 m/s) sin cero nuevo; fuente NINGUNA (real 126.1 m; antes: ~−7,5 ESKF m VÁLIDO)
+  ok:   snapshot y compacta publican la fase incierta (esquema v4)
+  ok: descenso a 2.0 m/s, nunca alineado: align_ok 0 → 0, ZUPT 0 → 0, sin referencia de navigation.c
+  ok:   fase INCIERTA publicada (ni rampa ni vuelo); ESKF fuera de servicio (why 0x8009, 3625 muestras retenidas)
+  ok:   respaldo siguiendo (v_z -1.94 m/s) sin cero nuevo; fuente NINGUNA (real 126.1 m; antes: ~−7,5 ESKF m VÁLIDO)
+  ok:   snapshot y compacta publican la fase incierta (esquema v4)
+  ok: descenso a 0.8 m/s, alineado en rampa: align_ok 1 → 1, ZUPT 129 → 129, sin referencia de navigation.c
+  ok:   fase INCIERTA publicada (ni rampa ni vuelo); ESKF fuera de servicio (why 0x8009, 3625 muestras retenidas)
+  ok:   respaldo siguiendo (v_z -0.68 m/s) sin cero nuevo; fuente NINGUNA (real 140.5 m; antes: ~−3,5 respaldo m VÁLIDO)
+  ok:   snapshot y compacta publican la fase incierta (esquema v4)
+  ok: descenso a 0.8 m/s, nunca alineado: align_ok 0 → 0, ZUPT 0 → 0, sin referencia de navigation.c
+  ok:   fase INCIERTA publicada (ni rampa ni vuelo); ESKF fuera de servicio (why 0x8009, 3625 muestras retenidas)
+  ok:   respaldo siguiendo (v_z -0.81 m/s) sin cero nuevo; fuente NINGUNA (real 140.5 m; antes: ~−3,5 respaldo m VÁLIDO)
+  ok:   snapshot y compacta publican la fase incierta (esquema v4)
+  ok: arranque normal: rampa confirmada, VÁLIDO, fuente ESKF, respaldo válido
+  ok: sin BMP durante 39 s: rampa confirmada por la IMU; DEGRADADO por NO_ALT_REF
+  ok: BMP a 40 s: referencias de navegación y del respaldo en rampa; VÁLIDO (alt_ref 0.00 m)
+  ok: parones de 34 ms en rampa: la rampa sigue confirmada
+  ok: sin baro, hueco de IMU de 0,3 s en rampa (≤ svc.pad_gap_max_s): rampa confirmada y realinea (align_ok 2)
+  ok: sin baro, hueco de 0,6 s: fase INCIERTA (política conservadora, hueco 605 ms), no realinea
+  ok: reinicio pedido por el anfitrión (declara rampa): sesión nueva, rampa confirmada, alinea
+  ok: aviso de referencia con fase incierta: sin sesión nueva, baro fuera
+30. REGRESIÓN: un respaldo caducado sólo vuelve a ser válido con una ventana coherente nueva
+  ok: 19 rechazadas cada 60 ms: NO válido, antigüedad 1140 ms; caducado en la 10.ª (600 ms > 500): ventana pendiente
+  ok: una medida compatible tras la caducidad: RECUPERANDO, NO válido, sin capacidad ni fuente (antes: TRACK y válido)
+  ok: 19 coherentes: todavía recuperando
+  ok: 20 coherentes: válido otra vez con la MISMA referencia (0.000 m)
+  ok: compatible con antigüedad exactamente 500 ms: aceptada y válida
+  ok: con 500 ms + 1 ms: caducado, hace falta la ventana
+  ok: intervalos de 10–99 ms y 19 rechazos en 380 ms: sigue en seguimiento y válido, sin ventanas nuevas
+  ok: en vuelo: caducado, recuperando, cero intacto
+  ok: en vuelo: válido tras la ventana con el MISMO cero (0.003 m)
+31. REGRESIÓN: la rampa confirmada caduca también por el reloj en silencio total
+  ok: navegación VÁLIDA en rampa hasta 15 s
+  ok: silencio de 1.04 s (< latencia admitida): ESKF NO VÁLIDO por antigüedad, rampa aún confirmada
+  ok: límite exacto (1.050 s sin muestras procesadas): todavía rampa
+  ok: 1 µs más: vencimiento por el reloj → fase INCIERTA (causa 2, why 0x8009), navigation.c cortado
+  ok: la transición queda en la traza (PHASE, causa silencio, 1050 ms, en el reloj del consume)
+  ok: aviso de referencia a 17 s: conserva la sesión, baro fuera el resto de la sesión (antes: sesión nueva y 10 s de rampa)
+  ok: las muestras vuelven a 18 s: sigue INCIERTA, sin realinear (align_ok 1), baro sin usar
+  ok: reinicio pedido por el anfitrión en rampa: sesión nueva, rampa confirmada, VÁLIDO
+  ok: parón de 0,9 s del router y latencia de 0,9 s después (cola continua): la rampa sigue confirmada
+  ok: parón de 1,2 s (> latencia admitida 1.05 s): caduca por el reloj (con la cola real de 128 paquetes habría además un hueco de muestras)
+  ok: sin datos tras el inicio: rampa por contrato hasta 10 s + 1.05 s; después, INCIERTA
+275/275 comprobaciones correctas

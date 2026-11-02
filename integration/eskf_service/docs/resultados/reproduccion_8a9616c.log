@@ -1,0 +1,15 @@
+# Regresión 31 (silencio total) compilada contra el servicio de 8a9616c, ANTES de la corrección
+# (compat.h sólo da nombre a los campos nuevos; con el código de esta entrega la misma prueba pasa entera)
+31. REGRESIÓN: la rampa confirmada caduca también por el reloj en silencio total
+  ok: navegación VÁLIDA en rampa hasta 15 s
+  ok: silencio de 1.04 s (< latencia admitida): ESKF NO VÁLIDO por antigüedad, rampa aún confirmada
+  ok: límite exacto (1.050 s sin muestras procesadas): todavía rampa
+  FALLO test/test_service.c(sobre 8a9616c):1932: 1 µs más: vencimiento por el reloj → fase INCIERTA (causa 2, why 0x0000), navigation.c cortado
+  FALLO test/test_service.c(sobre 8a9616c):1935: la transición queda en la traza (PHASE, causa silencio, 0 ms, en el reloj del consume)
+  FALLO test/test_service.c(sobre 8a9616c):1944: aviso de referencia a 17 s: conserva la sesión, baro fuera el resto de la sesión (antes: sesión nueva y 10 s de rampa)
+  FALLO test/test_service.c(sobre 8a9616c):1952: las muestras vuelven a 18 s: sigue INCIERTA, sin realinear (align_ok 1), baro sin usar
+  FALLO test/test_service.c(sobre 8a9616c):1959: reinicio pedido por el anfitrión en rampa: sesión nueva, rampa confirmada, VÁLIDO
+  ok: parón de 0,9 s del router y latencia de 0,9 s después (cola continua): la rampa sigue confirmada
+  FALLO test/test_service.c(sobre 8a9616c):1973: parón de 1,2 s (> latencia admitida 1.05 s): caduca por el reloj (con la cola real de 128 paquetes habría además un hueco de muestras)
+  FALLO test/test_service.c(sobre 8a9616c):1984: sin datos tras el inicio: rampa por contrato hasta 10 s + 1.05 s; después, INCIERTA
+268/275 comprobaciones correctas

@@ -1,0 +1,81 @@
+mkdir -p build
+cc -std=c99 -O2 -Wall -Wextra -Wpedantic -Wshadow -Werror -fno-fast-math -ffp-contract=off -DESKF_USE_FLOAT -Wdouble-promotion -Iinclude -I../../c test/test_service.c src/eskf_service.c src/eskf_svc_params.c src/eskf_svc_msg.c ../../c/eskf.c ../../c/navigation.c ../../c/nav_events.c -lm -pthread -o build/test_service
+cc -std=c99 -O2 -Wall -Wextra -Wpedantic -Wshadow -Werror -fno-fast-math -ffp-contract=off -Iinclude -I../../c test/test_service.c src/eskf_service.c src/eskf_svc_params.c src/eskf_svc_msg.c ../../c/eskf.c ../../c/navigation.c ../../c/nav_events.c -lm -pthread -o build/test_service_double
+mkdir -p build/spp_inc
+ln -sfn <spp> build/spp_inc/spp
+== compilación estricta del código propio (C99 núcleo, C11 pegamento SPP, float y double)
+for f in src/eskf_service.c src/eskf_svc_params.c src/eskf_svc_msg.c; do cc -std=c99 -O2 -Wall -Wextra -Wpedantic -Wshadow -Werror -Wconversion -Wno-sign-conversion -DESKF_USE_FLOAT -Wdouble-promotion -Iinclude -I../../c -c $f -o build/strict.o || exit 1; \
+  cc -std=c99 -O2 -Wall -Wextra -Wpedantic -Wshadow -Werror -Wconversion -Wno-sign-conversion -Iinclude -I../../c -c $f -o build/strict.o || exit 1; done
+cc -std=c11 -O2 -Wall -Wextra -Wpedantic -Wshadow -Werror -Wconversion -Wno-sign-conversion -DESKF_USE_FLOAT -Wdouble-promotion -Iinclude -I../../c -Ibuild/spp_inc -c src/spp_services_eskf.c -o build/strict.o
+g++ -std=c++11 -Wall -Wextra -Wpedantic -Wshadow -Werror -DESKF_USE_FLOAT -Iinclude -I../../c -Ibuild/spp_inc -c test/cpp_header_check.cpp -o build/cpp_header_check.o
+./build/test_service
+== test_service [float]
+1/2. IMU de 44 B, histórico de 48, unidades, offsets ya aplicados, ejes y límites
+3. CRC, relleno 0xFF, versión, identificador, longitud, payload incompleto y valores
+4. KPID asignados en distinto orden y ausencia de autosuscripción
+5. Inicialización dual, configuración pendiente y reinicio
+6. Duplicados, pérdidas, wraps de secuencia y de reloj, eventos atrasados
+7. Colas llenas, propiedad de los paquetes y pérdidas contadas una sola vez
+8. Caducidad sin sensores (sin marca temporal nueva para un estado congelado)
+9. Barómetro inicial, referencia de navegación y capacidades
+10. Alineación en reposo, movimiento, despegue, huecos y recuperación en rampa
+11. Fragmentación y reconstrucción de la salida
+12. Las mismas entradas por un nav_t independiente dan la misma salida
+13. Trabajo y memoria acotados; traza de validación
+  sizeof(eskf_svc_t) = 19616 bytes (estático; sin memoria dinámica)
+  traza: 618 registros/s × 16 B = 9.9 kB/s con IMU 225 Hz + baro 100 Hz
+14. REGRESIÓN A: una marca futura no contamina el seguimiento del flujo
+15. REGRESIÓN B: paquetes antiguos, reinicio parcial del productor y reinicio pedido en vuelo
+16. Baro: medida aislada inválida, atípico, pérdida y caducidad del respaldo
+17. Cambio de referencia del baro avisado en vuelo
+18. Saturación ±4 g: continuación experimental, presupuesto, fuera de modelo
+19. Respaldo barométrico independiente: signo, referencia congelada, sin ESKF
+20. Salida operativa compacta (≤ 50 B, autónoma)
+21. Consultas concurrentes: copia completa bajo sección crítica (sin datos a medias)
+22. Validación de la configuración y preparación ligada a la configuración exacta
+23. REGRESIÓN: los rechazos no renuevan la frescura del respaldo barométrico
+24. REGRESIÓN: la primera lectura anómala no fija la referencia; el cero de lanzamiento se conserva
+25. REGRESIÓN: las muestras anteriores a una sesión no la inicializan
+26. Pérdida breve de IMU en vuelo (admisible / no admisible) y fuentes publicadas
+27. REGRESIÓN: tras reconocer el vuelo no hay alineación, ZUPT, referencia nueva ni reinicio
+28. REGRESIÓN: el cero de lanzamiento no se fija con el primer baro recibido en vuelo
+29. REGRESIÓN: fase incierta; un descenso lento no se convierte en rampa (alineación, ZUPT, referencias)
+30. REGRESIÓN: un respaldo caducado sólo vuelve a ser válido con una ventana coherente nueva
+31. REGRESIÓN: la rampa confirmada caduca también por el reloj en silencio total
+275/275 comprobaciones correctas
+./build/test_service_double
+== test_service [double]
+1/2. IMU de 44 B, histórico de 48, unidades, offsets ya aplicados, ejes y límites
+3. CRC, relleno 0xFF, versión, identificador, longitud, payload incompleto y valores
+4. KPID asignados en distinto orden y ausencia de autosuscripción
+5. Inicialización dual, configuración pendiente y reinicio
+6. Duplicados, pérdidas, wraps de secuencia y de reloj, eventos atrasados
+7. Colas llenas, propiedad de los paquetes y pérdidas contadas una sola vez
+8. Caducidad sin sensores (sin marca temporal nueva para un estado congelado)
+9. Barómetro inicial, referencia de navegación y capacidades
+10. Alineación en reposo, movimiento, despegue, huecos y recuperación en rampa
+11. Fragmentación y reconstrucción de la salida
+12. Las mismas entradas por un nav_t independiente dan la misma salida
+13. Trabajo y memoria acotados; traza de validación
+  sizeof(eskf_svc_t) = 20848 bytes (estático; sin memoria dinámica)
+  traza: 618 registros/s × 16 B = 9.9 kB/s con IMU 225 Hz + baro 100 Hz
+14. REGRESIÓN A: una marca futura no contamina el seguimiento del flujo
+15. REGRESIÓN B: paquetes antiguos, reinicio parcial del productor y reinicio pedido en vuelo
+16. Baro: medida aislada inválida, atípico, pérdida y caducidad del respaldo
+17. Cambio de referencia del baro avisado en vuelo
+18. Saturación ±4 g: continuación experimental, presupuesto, fuera de modelo
+19. Respaldo barométrico independiente: signo, referencia congelada, sin ESKF
+20. Salida operativa compacta (≤ 50 B, autónoma)
+21. Consultas concurrentes: copia completa bajo sección crítica (sin datos a medias)
+22. Validación de la configuración y preparación ligada a la configuración exacta
+23. REGRESIÓN: los rechazos no renuevan la frescura del respaldo barométrico
+24. REGRESIÓN: la primera lectura anómala no fija la referencia; el cero de lanzamiento se conserva
+25. REGRESIÓN: las muestras anteriores a una sesión no la inicializan
+26. Pérdida breve de IMU en vuelo (admisible / no admisible) y fuentes publicadas
+27. REGRESIÓN: tras reconocer el vuelo no hay alineación, ZUPT, referencia nueva ni reinicio
+28. REGRESIÓN: el cero de lanzamiento no se fija con el primer baro recibido en vuelo
+29. REGRESIÓN: fase incierta; un descenso lento no se convierte en rampa (alineación, ZUPT, referencias)
+30. REGRESIÓN: un respaldo caducado sólo vuelve a ser válido con una ventana coherente nueva
+31. REGRESIÓN: la rampa confirmada caduca también por el reloj en silencio total
+275/275 comprobaciones correctas
+código 0

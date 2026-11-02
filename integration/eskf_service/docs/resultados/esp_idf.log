@@ -1,0 +1,6 @@
+avisos en el código propio: 0
+avisos totales (incluido SPP sin modificar): 3
+eskf_service_build_check.bin binary size 0x3e7f0 bytes. Smallest app partition is 0x100000 bytes. 0xc1810 bytes (76%) free.
+--- últimas líneas de ninja.log
+eskf_service_build_check.bin binary size 0x3e7f0 bytes. Smallest app partition is 0x100000 bytes. 0xc1810 bytes (76%) free.
+código 0

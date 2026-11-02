@@ -1,0 +1,57 @@
+# Reproducción ANTES (a26704a) / AHORA de los cuatro defectos de esta entrega
+# (código de a26704a extraído con git archive; mismas pruebas y datos)
+
+## 1 y 3. Regresiones 29 (fase incierta) y 30 (caducidad del respaldo) compiladas contra el servicio de a26704a
+# (compat.h sólo define las constantes nuevas; o.phase se lee como o.nav.phase y S.pad como S.initialized,
+#  porque a26704a no distinguía fase incierta. El código de esta entrega da 264/264.)
+  FALLO test/test_service.c(sobre a26704a):797: primer registro: configuración exacta (id, perfil, esquema, arranque y reloj del inicio)
+  FALLO test/test_service.c(sobre a26704a):1685: descenso a 2.0 m/s, alineado en rampa: align_ok 1 → 2, ZUPT 129 → 242, sin referencia de navigation.c
+  FALLO test/test_service.c(sobre a26704a):1689:   fase INCIERTA publicada (ni rampa ni vuelo); ESKF fuera de servicio (why 0x0000, 0 muestras retenidas)
+  FALLO test/test_service.c(sobre a26704a):1694:   respaldo siguiendo (v_z -2.09 m/s) sin cero nuevo; fuente NINGUNA (real 126.1 m; antes: ~−7,5 ESKF m VÁLIDO)
+  FALLO test/test_service.c(sobre a26704a):1703:   snapshot y compacta publican la fase incierta (esquema v3)
+  FALLO test/test_service.c(sobre a26704a):1685: descenso a 2.0 m/s, nunca alineado: align_ok 0 → 1, ZUPT 0 → 112, sin referencia de navigation.c
+  FALLO test/test_service.c(sobre a26704a):1689:   fase INCIERTA publicada (ni rampa ni vuelo); ESKF fuera de servicio (why 0x0000, 0 muestras retenidas)
+  FALLO test/test_service.c(sobre a26704a):1694:   respaldo siguiendo (v_z -1.94 m/s) sin cero nuevo; fuente NINGUNA (real 126.1 m; antes: ~−7,5 ESKF m VÁLIDO)
+  FALLO test/test_service.c(sobre a26704a):1703:   snapshot y compacta publican la fase incierta (esquema v3)
+  FALLO test/test_service.c(sobre a26704a):1685: descenso a 0.8 m/s, alineado en rampa: align_ok 1 → 2, ZUPT 129 → 242, sin referencia de navigation.c
+  FALLO test/test_service.c(sobre a26704a):1689:   fase INCIERTA publicada (ni rampa ni vuelo); ESKF fuera de servicio (why 0x0000, 0 muestras retenidas)
+  FALLO test/test_service.c(sobre a26704a):1694:   respaldo siguiendo (v_z -0.68 m/s) sin cero nuevo; fuente NINGUNA (real 140.5 m; antes: ~−3,5 respaldo m VÁLIDO)
+  FALLO test/test_service.c(sobre a26704a):1703:   snapshot y compacta publican la fase incierta (esquema v3)
+  FALLO test/test_service.c(sobre a26704a):1685: descenso a 0.8 m/s, nunca alineado: align_ok 0 → 1, ZUPT 0 → 112, sin referencia de navigation.c
+  FALLO test/test_service.c(sobre a26704a):1689:   fase INCIERTA publicada (ni rampa ni vuelo); ESKF fuera de servicio (why 0x0000, 0 muestras retenidas)
+  FALLO test/test_service.c(sobre a26704a):1694:   respaldo siguiendo (v_z -0.81 m/s) sin cero nuevo; fuente NINGUNA (real 140.5 m; antes: ~−3,5 respaldo m VÁLIDO)
+  FALLO test/test_service.c(sobre a26704a):1703:   snapshot y compacta publican la fase incierta (esquema v3)
+  FALLO test/test_service.c(sobre a26704a):1756: sin baro, hueco de 0,6 s: fase INCIERTA (política conservadora, hueco 1 ms), no realinea
+  FALLO test/test_service.c(sobre a26704a):1776: aviso de referencia con fase incierta: sin sesión nueva, baro fuera
+  FALLO test/test_service.c(sobre a26704a):1799: 19 rechazadas cada 60 ms: NO válido, antigüedad 1140 ms; caducado en la 10.ª (600 ms > 500): ventana pendiente
+  FALLO test/test_service.c(sobre a26704a):1805: una medida compatible tras la caducidad: RECUPERANDO, NO válido, sin capacidad ni fuente (antes: TRACK y válido)
+  FALLO test/test_service.c(sobre a26704a):1810: 19 coherentes: todavía recuperando
+  FALLO test/test_service.c(sobre a26704a):1826: con 500 ms + 1 ms: caducado, hace falta la ventana
+  FALLO test/test_service.c(sobre a26704a):1862: en vuelo: caducado, recuperando, cero intacto
+240/264 comprobaciones correctas
+
+## 1. Lo que se publicaba a los 31,5 s (12 s de descenso desde ≈150 m): ANTES (a26704a) y AHORA
+ANTES  [publicado] v=2.0 alineado_antes=1: ESKF h -7.50 m validez 2 fuente 1; respaldo h nan m ref nan valido 0
+ANTES  [publicado] v=2.0 alineado_antes=0: ESKF h -7.51 m validez 2 fuente 1; respaldo h nan m ref nan valido 0
+ANTES  [publicado] v=0.8 alineado_antes=1: ESKF h -4.46 m validez 2 fuente 1; respaldo h -3.48 m ref 143.97 valido 1
+ANTES  [publicado] v=0.8 alineado_antes=0: ESKF h -4.46 m validez 2 fuente 1; respaldo h -3.52 m ref 143.99 valido 1
+AHORA  [publicado] v=2.0 alineado_antes=1: ESKF h -0.00 m validez 0 fuente 0; respaldo h nan m ref nan valido 0
+AHORA  [publicado] v=2.0 alineado_antes=0: ESKF h -nan m validez 0 fuente 0; respaldo h nan m ref nan valido 0
+AHORA  [publicado] v=0.8 alineado_antes=1: ESKF h 0.00 m validez 0 fuente 0; respaldo h nan m ref nan valido 0
+AHORA  [publicado] v=0.8 alineado_antes=0: ESKF h -nan m validez 0 fuente 0; respaldo h nan m ref nan valido 0
+# (validez 2 = VÁLIDO, fuente 1 = ESKF; reales 126,1 m a 2 m/s y 140,5 m a 0,8 m/s)
+
+## 2. compare_runs.py con mensajes idénticos (gen_spp 14 s, traza cerrada y reproducida)
+svc_replay: reproducción COMPLETA: traza v3 cerrada (8526 registros, CRC 0x937b) contrastada entera; 4063 entradas, 395 salidas, 0 aplazamientos
+ANTES: mensajes idénticos byte a byte (395 paquetes)
+ANTES: código 1; RESULTADO: NO EQUIVALENTE; avisos alt_ref NaN mostrados: 10
+svc_replay: reproducción COMPLETA: traza v4 cerrada (8526 registros, CRC 0xf339) contrastada entera; 4063 entradas, 395 salidas, 0 aplazamientos
+AHORA: mensajes idénticos byte a byte (395 paquetes)
+AHORA: código 0; RESULTADO: EQUIVALENTE (dentro de tolerancia); avisos alt_ref NaN mostrados: 0
+
+## 4. nav_out_decode.py: archivo vacío y KPID inexistente
+ANTES vacío: código 0; RESULTADO: captura completa y sin corrupción
+ANTES KPID 0x40 en 395 paquetes: código 0; RESULTADO: captura completa y sin corrupción
+AHORA vacío: código 2; SIN DATOS COMPROBABLES: archivo SIN DATOS: 0 paquetes SPP (0 B)
+AHORA KPID 0x40 en 395 paquetes: código 2; SIN DATOS COMPROBABLES: el KPID 0x0040 NO APARECE en la captura (395 paquetes; KPID presentes: 0x0010)
+ANTES: snapshots rechazados por alt_ref NaN: placa 25 , PC 25
